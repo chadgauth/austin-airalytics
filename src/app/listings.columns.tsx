@@ -2,24 +2,48 @@
 
 import type { Column, ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, MoreHorizontal } from "lucide-react";
-import type { Listing } from "./listings.types";
+import type { Listing } from "../types/listings";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
+import { cn, decodeHtmlEntities } from "@/lib/utils";
+
+const formatCurrency = (value: number) => {
+  if (Number.isNaN(value)) {
+    return "N/A";
+  }
+
+  const formatted = value.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  // Split into dollars and cents
+  const [dollars, cents] = formatted.split('.');
+
+  return (
+    <span>
+      {dollars}<sup className="text-[9px] pl-[1px] text-gray-400 font-semibold relative -top-1">{cents}</sup>
+    </span>
+  );
+};
 
 const SortableHeaderButton = ({
   column,
   label,
   className,
+  isNumeric,
 }: {
   column: Column<Listing>;
   label: string;
   className?: string;
+  isNumeric?: boolean
 }) => (
   <Button
-    variant="ghost"     
+    variant="ghost"
     size="sm"
-    className={cn("pl-[8px]!", className)}
+    className={cn("pl-[8px]!", isNumeric && "justify-end w-full pr-0.5!", className)}
     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
     aria-label={
       column.getIsSorted() === "asc"
@@ -60,19 +84,15 @@ export const columns: ColumnDef<Listing>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: ({ column }) => <SortableHeaderButton column={column} label="ID" />,
-  },
-  {
     accessorKey: "name",
     header: ({ column }) => (
-      <SortableHeaderButton column={column} label="Name" />
+      <SortableHeaderButton column={column} label="Host Name / Name" />
     ),
-  },
-  {
-    accessorKey: "host_name",
-    header: ({ column }) => (
-      <SortableHeaderButton column={column} label="Host" />
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <div>{decodeHtmlEntities(row.original.host_name)}</div>
+        <div className="text-[11px] text-gray-700">{row.original.name}</div>
+      </div>
     ),
   },
   {
@@ -81,17 +101,49 @@ export const columns: ColumnDef<Listing>[] = [
   },
   {
     accessorKey: "price",
-    header: () => <div className="text-right">Price</div>,
+    header: ({ column }) => (
+        <SortableHeaderButton column={column} label="Price" isNumeric={true} />
+    ),
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"));
-      const formatted = Number.isNaN(price) ? "N/A" : `$${price.toFixed(2)}`;
 
-      return <div className="text-right font-medium">{formatted}</div>;
+      return (
+        <div className="text-right font-medium">
+          {formatCurrency(price)}
+        </div>
+      );
     },
   },
   {
     accessorKey: "neighbourhood",
     header: "Neighborhood",
+  },
+  {
+    accessorKey: "potential_revenue",
+    header: ({ column }) => (
+      <SortableHeaderButton column={column} label="Potential Revenue" isNumeric={true} />
+    ),
+    cell: ({ row }) => {
+      const revenue = row.getValue("potential_revenue") as number;
+
+      return (
+        <div className="text-right font-medium">
+          {formatCurrency(revenue)}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "risk_score",
+    header: ({ column }) => (
+      <SortableHeaderButton column={column} label="Risk Score" isNumeric={true} />
+    ),
+    cell: ({ row }) => {
+      const risk = row.getValue("risk_score") as number;
+      const formatted = Number.isNaN(risk) ? "N/A" : risk.toFixed(2);
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
   },
   {
     id: "actions",

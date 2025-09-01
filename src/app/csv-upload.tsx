@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { parseCSVToListings } from "../lib/csv-parser";
-import type { Listing } from "./listings.types";
+import type { Listing } from "../types/listings";
 import { Input } from "@/components/ui/input";
 
 interface CSVUploadProps {

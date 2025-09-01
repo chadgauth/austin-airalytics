@@ -1,4 +1,4 @@
-import type { Listing } from "../app/listings.types";
+import type { Listing } from "../types/listings";
 
 /**
  * Parses CSV text into an array of Listing objects.
@@ -48,6 +48,8 @@ export function parseCSVToListings(csvText: string): Listing[] {
           availability_365: "",
           number_of_reviews_ltm: "",
           license: "",
+          potential_revenue: 0,
+          risk_score: 0,
         };
 
         headers.forEach((header, index) => {

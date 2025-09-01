@@ -1,5 +1,5 @@
 import { parseCSVToListings } from "../lib/csv-parser";
-import type { Listing } from "./listings.types";
+import type { Listing } from "../types/listings";
 
 export async function getListingsData(): Promise<Listing[]> {
   try {

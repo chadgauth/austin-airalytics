@@ -17,4 +17,6 @@ export type Listing = {
   availability_365: string;
   number_of_reviews_ltm: string;
   license: string;
+  potential_revenue: number;
+  risk_score: number;
 };
