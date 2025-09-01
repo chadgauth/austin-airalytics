@@ -30,7 +30,12 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [":PACKAGE:", ":NODE:", ":PATH:"]
+          }
+        }
       }
     }
   }
