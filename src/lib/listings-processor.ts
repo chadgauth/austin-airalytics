@@ -1,5 +1,154 @@
-import { calculateIQRBounds, isOutlier } from "./utils";
-import type { Listing } from "@/types/listings";
+import { BASE_10 } from "./constants";
+import type { Filters, Listing } from "@/types/listings";
+
+/**
+ * Helper function to filter by string array values
+ */
+function filterByStringArray(
+  listings: Listing[],
+  field: keyof Listing,
+  values: string[],
+): Listing[] {
+  if (values.length === 0) return listings;
+  return listings.filter((listing) =>
+    values.includes(listing[field] as string),
+  );
+}
+
+/**
+ * Helper function to filter by numeric range
+ */
+function filterByNumericRange(
+  listings: Listing[],
+  field: keyof Listing,
+  min: number | null,
+  max: number | null,
+  parser: (value: string) => number,
+): Listing[] {
+  let filtered = listings;
+  if (min !== null) {
+    filtered = filtered.filter(
+      (listing) => parser(listing[field] as string) >= min,
+    );
+  }
+  if (max !== null) {
+    filtered = filtered.filter(
+      (listing) => parser(listing[field] as string) <= max,
+    );
+  }
+  return filtered;
+}
+
+/**
+ * Filters listings based on provided filters and optional search term.
+ */
+export function filterListings(
+  listings: Listing[],
+  filters: Filters,
+  searchTerm?: string,
+): Listing[] {
+  let filtered = listings;
+
+  if (searchTerm?.trim()) {
+    const term = searchTerm.toLowerCase();
+    filtered = filtered.filter((listing) =>
+      listing.name.toLowerCase().includes(term),
+    );
+  }
+
+  filtered = filterByStringArray(
+    filtered,
+    "neighbourhood_cleansed",
+    filters.zip,
+  );
+  filtered = filterByStringArray(filtered, "room_type", filters.roomType);
+  filtered = filterByNumericRange(
+    filtered,
+    "price",
+    filters.minPrice,
+    filters.maxPrice,
+    (value) => parseFloat(value.replace(/[^0-9.-]/g, "")),
+  );
+  filtered = filterByStringArray(
+    filtered,
+    "property_type",
+    filters.propertyType,
+  );
+  filtered = filterByNumericRange(
+    filtered,
+    "accommodates",
+    filters.minAccommodates,
+    filters.maxAccommodates,
+    (value) => parseInt(value, BASE_10),
+  );
+  filtered = filterByNumericRange(
+    filtered,
+    "bedrooms",
+    filters.minBedrooms,
+    filters.maxBedrooms,
+    (value) => parseInt(value, BASE_10),
+  );
+  filtered = filterByNumericRange(
+    filtered,
+    "review_scores_rating",
+    filters.minReviewScore,
+    filters.maxReviewScore,
+    (value) => parseFloat(value),
+  );
+  if (filters.hostIsSuperhost) {
+    filtered = filtered.filter((listing) => listing.host_is_superhost === "t");
+  }
+  if (filters.instantBookable) {
+    filtered = filtered.filter((listing) => listing.instant_bookable === "t");
+  }
+
+  return filtered;
+}
+/**
+ * Calculates the Interquartile Range (IQR) bounds for outlier detection.
+ * Outlier detection using IQR method:
+ * - Sort the values
+ * - Find Q1 (25th percentile) and Q3 (75th percentile)
+ * - IQR = Q3 - Q1
+ * - Lower bound = Q1 - multiplier * IQR
+ * - Upper bound = Q3 + multiplier * IQR
+ * - Values outside these bounds are considered outliers
+ * Uses a multiplier of 2.0 for more lenient detection, allowing some extreme but valid values.
+ * @param values Array of numbers (should be filtered for valid values)
+ * @returns Object with lower and upper bounds
+ */
+export function calculateIQRBounds(values: number[]): {
+  lower: number;
+  upper: number;
+} {
+  if (values.length === 0) return { lower: -Infinity, upper: Infinity };
+
+  const sorted = [...values].sort((a, b) => a - b);
+  const q1Index = Math.floor(sorted.length * 0.25);
+  const q3Index = Math.floor(sorted.length * 0.75);
+
+  const q1 = sorted[q1Index];
+  const q3 = sorted[q3Index];
+  const iqr = q3 - q1;
+
+  const lower = q1 - 2.0 * iqr;
+  const upper = q3 + 2.0 * iqr;
+
+  return { lower, upper };
+}
+
+/**
+ * Checks if a value is an outlier based on IQR bounds.
+ * @param value The value to check
+ * @param bounds The IQR bounds
+ * @returns True if outlier
+ */
+export function isOutlier(
+  value: number,
+  bounds: { lower: number; upper: number },
+): boolean {
+  return value < bounds.lower || value > bounds.upper;
+}
 
 /**
  * Processes listings by filtering invalid entries and outliers.
@@ -8,7 +157,7 @@ import type { Listing } from "@/types/listings";
 export function processListings(listings: Listing[]): Listing[] {
   // Filter out invalid listings (price <= 0)
   const filtered = listings.filter((listing) => {
-    const price = parseFloat(listing.price) || 0;
+    const price = parseFloat(listing.price.replace("$", "")) || 0;
     const availability = parseFloat(listing.availability_365) || 0;
     return price > 0 && availability > 0;
   });
@@ -16,7 +165,7 @@ export function processListings(listings: Listing[]): Listing[] {
   // Group by neighbourhood_group for location-specific outlier detection
   const grouped = filtered.reduce(
     (acc, listing) => {
-      const group = listing.neighbourhood_group || "Unknown";
+      const group = listing.neighbourhood_group_cleansed || "Unknown";
       if (!acc[group]) acc[group] = [];
       acc[group].push(listing);
       return acc;
@@ -26,14 +175,12 @@ export function processListings(listings: Listing[]): Listing[] {
 
   // Filter outliers per group
   const processedListings: Listing[] = [];
-  for (const groupListings of Object.values(grouped)) {
-    if (groupListings.length < 4) {
-      // Not enough data for IQR, include all
+  for (const [groupName, groupListings] of Object.entries(grouped)) {
+    if (groupListings.length < 4 || groupName === "Unknown") {
+      // Not enough data for IQR or unknown group, include all
       processedListings.push(...groupListings);
       continue;
     }
-
-    const BASE_10 = 10;
 
     // Extract numeric values for this group
     const prices = groupListings
@@ -61,7 +208,7 @@ export function processListings(listings: Listing[]): Listing[] {
 
     // Filter outliers in this group
     const filteredGroup = groupListings.filter((listing) => {
-      const price = parseFloat(listing.price);
+      const price = parseFloat(listing.price.replace("$", ""));
       const minNight = parseInt(listing.minimum_nights, 10);
       const rpm = parseFloat(listing.reviews_per_month);
       const nr = parseInt(listing.number_of_reviews, 10);
@@ -84,49 +231,87 @@ export function processListings(listings: Listing[]): Listing[] {
 
 /**
  * Calculates risk score for a listing.
+ * Score ranges from 0-50, where lower is better.
+ * Factors: room type, occupancy, host exposure, reviews, minimum nights, reviews per month.
  */
 export function calculateRiskScore(listing: Listing): number {
-  const base = 0;
-
-  // Room type factor
+  // Room type factor (0-2, scaled to 0-10)
   let room_type_factor = 0;
   switch (listing.room_type.toLowerCase()) {
     case "entire home/apt":
       room_type_factor = 0;
       break;
     case "private room":
-      room_type_factor = 1;
+      room_type_factor = 5;
       break;
     case "shared room":
-      room_type_factor = 2;
+      room_type_factor = 10;
       break;
     case "hotel room":
-      room_type_factor = 1;
+      room_type_factor = 5;
       break;
     default:
-      room_type_factor = 1;
+      room_type_factor = 5;
   }
 
-  // Occupancy factor (higher when less available)
+  // Occupancy factor (0-10, higher when less available)
   const availability = Number.parseInt(listing.availability_365, 10) || 0;
   const occupancy_factor = ((365 - availability) / 365) * 10;
 
-  // Host exposure factor
+  // Host exposure factor (0-10, scaled from 0-5)
   const host_listings =
     parseInt(listing.calculated_host_listings_count, 10) || 0;
-  const host_exposure_factor = Math.min(host_listings / 10, 5);
+  const host_exposure_factor = Math.min(host_listings / 10, 5) * 2;
 
-  // Reviews factor (lower with more reviews)
+  // Reviews factor (0-10, lower with more reviews)
   const reviews = parseInt(listing.number_of_reviews, 10) || 0;
   const reviews_factor = Math.max(0, 10 - reviews / 10);
 
+  // Minimum nights factor (0-10, higher with longer minimum stays)
+  const min_nights = parseInt(listing.minimum_nights, 10) || 1;
+  const min_nights_factor = Math.min(min_nights / 30, 1) * 10;
+
+  // Reviews per month factor (0-10, lower with more frequent reviews)
+  const rpm = parseFloat(listing.reviews_per_month) || 0;
+  const rpm_factor = rpm > 0 ? Math.max(0, 10 - rpm * 2) : 10;
+
+  // Weighted sum (total 0-50)
   return (
-    base +
     room_type_factor +
     occupancy_factor +
     host_exposure_factor +
-    reviews_factor
+    reviews_factor +
+    min_nights_factor +
+    rpm_factor
   );
+}
+
+/**
+ * Calculates average prices per neighbourhood (zip code).
+ */
+export function calculateAveragePricesByZip(
+  listings: Listing[],
+): Record<string, number> {
+  const zipPrices: Record<string, number[]> = {};
+
+  listings.forEach((listing) => {
+    const zip = listing.neighbourhood_cleansed;
+    const price = parseFloat(listing.price.replace("$", ""));
+    if (zip && !Number.isNaN(price) && price > 0) {
+      if (!zipPrices[zip]) {
+        zipPrices[zip] = [];
+      }
+      zipPrices[zip].push(price);
+    }
+  });
+
+  const averages: Record<string, number> = {};
+  for (const [zip, prices] of Object.entries(zipPrices)) {
+    const sum = prices.reduce((acc, price) => acc + price, 0);
+    averages[zip] = Math.round(sum / prices.length);
+  }
+
+  return averages;
 }
 
 /**
@@ -134,7 +319,7 @@ export function calculateRiskScore(listing: Listing): number {
  */
 export function enhanceListings(listings: Listing[]): Listing[] {
   return listings.map((listing) => {
-    const price = parseFloat(listing.price) || 0;
+    const price = parseFloat(listing.price.replace("$", "")) || 0;
     const availability = parseInt(listing.availability_365, 10) || 0;
 
     return {
@@ -143,4 +328,68 @@ export function enhanceListings(listings: Listing[]): Listing[] {
       risk_score: calculateRiskScore(listing),
     };
   });
+}
+/**
+ * Parses search parameters into Filters object.
+ */
+export function parseFilters(searchParams: URLSearchParams): Filters {
+  const zipParam = searchParams.get("zip");
+  const zip = zipParam ? zipParam.split(",") : [];
+
+  const roomTypeParam = searchParams.get("roomType");
+  const roomType = roomTypeParam ? roomTypeParam.split(",") : [];
+
+  const propertyTypeParam = searchParams.get("propertyType");
+  const propertyType = propertyTypeParam ? propertyTypeParam.split(",") : [];
+
+  const minPriceParam = searchParams.get("minPrice");
+  const minPrice = minPriceParam ? parseFloat(minPriceParam) : null;
+
+  const maxPriceParam = searchParams.get("maxPrice");
+  const maxPrice = maxPriceParam ? parseFloat(maxPriceParam) : null;
+
+  const minAccommodatesParam = searchParams.get("minAccommodates");
+  const minAccommodates = minAccommodatesParam
+    ? parseInt(minAccommodatesParam, 10)
+    : null;
+
+  const maxAccommodatesParam = searchParams.get("maxAccommodates");
+  const maxAccommodates = maxAccommodatesParam
+    ? parseInt(maxAccommodatesParam, 10)
+    : null;
+
+  const minBedroomsParam = searchParams.get("minBedrooms");
+  const minBedrooms = minBedroomsParam ? parseInt(minBedroomsParam, 10) : null;
+
+  const maxBedroomsParam = searchParams.get("maxBedrooms");
+  const maxBedrooms = maxBedroomsParam ? parseInt(maxBedroomsParam, 10) : null;
+
+  const minReviewScoreParam = searchParams.get("minReviewScore");
+  const minReviewScore = minReviewScoreParam
+    ? parseFloat(minReviewScoreParam)
+    : null;
+
+  const maxReviewScoreParam = searchParams.get("maxReviewScore");
+  const maxReviewScore = maxReviewScoreParam
+    ? parseFloat(maxReviewScoreParam)
+    : null;
+
+  const hostIsSuperhost = searchParams.get("hostIsSuperhost") === "true";
+  const instantBookable = searchParams.get("instantBookable") === "true";
+
+  return {
+    zip,
+    roomType,
+    propertyType,
+    minPrice,
+    maxPrice,
+    minAccommodates,
+    maxAccommodates,
+    minBedrooms,
+    maxBedrooms,
+    minReviewScore,
+    maxReviewScore,
+    hostIsSuperhost,
+    instantBookable,
+  };
 }

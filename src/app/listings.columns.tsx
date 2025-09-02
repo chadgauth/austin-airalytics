@@ -1,30 +1,45 @@
 "use client";
 
 import type { Column, ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, MoreHorizontal } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  MoreHorizontal,
+} from "lucide-react";
 import type { Listing } from "../types/listings";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn, decodeHtmlEntities } from "@/lib/utils";
 
-const formatCurrency = (value: number) => {
-  if (Number.isNaN(value)) {
+export const formatCurrency = (value: string | number | null | undefined) => {
+  if (value == null) {
     return "N/A";
   }
 
-  const formatted = value.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  const strValue = typeof value === 'string' ? value : value.toString();
+  const numValue = parseFloat(strValue.replace(/[^0-9.-]/g, ''));
+
+  if (Number.isNaN(numValue)) {
+    return "N/A";
+  }
+
+  const formatted = numValue.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 
   // Split into dollars and cents
-  const [dollars, cents] = formatted.split('.');
+  const [dollars, cents] = formatted.split(".");
 
   return (
     <span>
-      {dollars}<sup className="text-[9px] pl-[1px] text-gray-400 font-semibold relative -top-1">{cents}</sup>
+      {dollars}
+      <sup className="text-[9px] pl-[1px] text-gray-400 font-semibold relative -top-1">
+        {cents}
+      </sup>
     </span>
   );
 };
@@ -34,29 +49,38 @@ const SortableHeaderButton = ({
   label,
   className,
   isNumeric,
+  tooltip,
 }: {
   column: Column<Listing>;
   label: string;
   className?: string;
-  isNumeric?: boolean
+  isNumeric?: boolean;
+  tooltip?: string;
 }) => (
   <Button
     variant="ghost"
     size="sm"
-    className={cn("pl-[8px]!", isNumeric && "justify-end w-full pr-0.5!", className)}
+    className={cn(
+      "pl-[8px]!",
+      isNumeric && "justify-end w-full pr-0.5!",
+      className,
+    )}
     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
     aria-label={
       column.getIsSorted() === "asc"
         ? `Sort ${label} descending`
         : `Sort ${label} ascending`
     }
+    title={tooltip}
   >
     {label}
-    {
-      Boolean(column.getIsSorted()) && <>
-        {column.getIsSorted() === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
-      </>
-    }
+    {Boolean(column.getIsSorted()) && (
+        column.getIsSorted() === "asc" ? (
+          <ArrowUp className="size-3" />
+        ) : (
+          <ArrowDown className="size-3" />
+        )
+    )}
   </Button>
 );
 
@@ -98,45 +122,72 @@ export const columns: ColumnDef<Listing>[] = [
   {
     accessorKey: "room_type",
     header: "Room Type",
-  },
-  {
-    accessorKey: "price",
-    header: ({ column }) => (
-        <SortableHeaderButton column={column} label="Price" isNumeric={true} />
-    ),
     cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
+      const roomType = row.getValue("room_type") as string;
+      const getBadgeVariant = (type: string) => {
+        switch (type.toLowerCase()) {
+          case "entire home/apt":
+            return "default";
+          case "private room":
+            return "secondary";
+          case "shared room":
+            return "warning";
+          case "hotel room":
+            return "info";
+          default:
+            return "outline";
+        }
+      };
 
       return (
-        <div className="text-right font-medium">
-          {formatCurrency(price)}
-        </div>
+        <Badge variant={getBadgeVariant(roomType)} className="font-medium">
+          {roomType}
+        </Badge>
       );
     },
   },
   {
-    accessorKey: "neighbourhood",
+    accessorKey: "price",
+    header: ({ column }) => (
+      <SortableHeaderButton column={column} label="Price" isNumeric={true} />
+    ),
+    cell: ({ row }) => {
+      const price = row.getValue<string | number>("price");
+      return (
+        <div className="text-right font-medium">{formatCurrency(price)}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "neighbourhood_cleansed",
     header: "Neighborhood",
   },
   {
     accessorKey: "potential_revenue",
     header: ({ column }) => (
-      <SortableHeaderButton column={column} label="Potential Revenue" isNumeric={true} />
+      <SortableHeaderButton
+        column={column}
+        label="Potential Revenue"
+        isNumeric={true}
+      />
     ),
     cell: ({ row }) => {
       const revenue = row.getValue("potential_revenue") as number;
 
       return (
-        <div className="text-right font-medium">
-          {formatCurrency(revenue)}
-        </div>
+        <div className="text-right font-medium">{formatCurrency(revenue)}</div>
       );
     },
   },
   {
     accessorKey: "risk_score",
     header: ({ column }) => (
-      <SortableHeaderButton column={column} label="Risk Score" isNumeric={true} />
+      <SortableHeaderButton
+        column={column}
+        label="Risk Score"
+        isNumeric={true}
+        tooltip="Risk Score: 0-50 (lower is better). Combines factors: room type (shared rooms higher risk), occupancy (lower availability higher risk), host exposure (more listings higher risk), reviews (fewer reviews higher risk), minimum nights (longer stays higher risk), reviews per month (less frequent higher risk)."
+      />
     ),
     cell: ({ row }) => {
       const risk = row.getValue("risk_score") as number;

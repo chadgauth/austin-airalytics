@@ -1,63 +1,95 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
+import { isCacheValid } from "@/lib/cache-utils";
 import { parseCSVToListings } from "@/lib/csv-parser";
-import { enhanceListings, processListings } from "@/lib/listings-processor";
-import type { Listing } from "@/types/listings";
+import {
+  enhanceListings,
+  filterListings,
+  parseFilters,
+  processListings,
+} from "@/lib/listings-processor";
+import type { Filters, Listing } from "@/types/listings";
 
-// High-value cache: Caches the processed and enhanced listings to avoid expensive CSV parsing,
-// data processing, and enhancement calculations on every request. This is more efficient than
-// caching per page/sort combination since the heavy lifting (parsing, filtering outliers,
-// calculating derived fields) is done once and reused. Sorting and pagination are lightweight
-// operations performed on the cached data per request.
+const sortListings = (listings: Listing[], sortBy: string, sortOrder: string): Listing[] => {
+  return [...listings].sort((a, b) => {
+    const aValue = a[sortBy as keyof typeof a];
+    const bValue = b[sortBy as keyof typeof b];
+
+    if (aValue === null || aValue === undefined) return 1;
+    if (bValue === null || bValue === undefined) return -1;
+
+    // Handle numeric strings (like price)
+    const aNum =
+      typeof aValue === "string"
+        ? sortBy === "price"
+          ? parseFloat(aValue.replace(/[^0-9.-]/g, ""))
+          : parseFloat(aValue)
+        : typeof aValue === "number"
+          ? aValue
+          : NaN;
+    const bNum =
+      typeof bValue === "string"
+        ? sortBy === "price"
+          ? parseFloat(bValue.replace(/[^0-9.-]/g, ""))
+          : parseFloat(bValue)
+        : typeof bValue === "number"
+          ? bValue
+          : NaN;
+
+    if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) {
+      return sortOrder === "asc" ? aNum - bNum : bNum - aNum;
+    }
+
+    // Fallback to string comparison
+    const aStr = String(aValue);
+    const bStr = String(bValue);
+    return sortOrder === "asc"
+      ? aStr.localeCompare(bStr)
+      : bStr.localeCompare(aStr);
+  });
+};
+
+const processAndPaginate = (
+  listings: Listing[],
+  filters: Filters,
+  search: string,
+  sortBy: string,
+  sortOrder: string,
+  page: number,
+  pageSize: number
+) => {
+  const filteredListings = filterListings(listings, filters, search);
+  const sortedListings = sortListings(filteredListings, sortBy, sortOrder);
+  const total = sortedListings.length;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedData = sortedListings.slice(startIndex, endIndex);
+  return {
+    data: paginatedData,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+};
+
+// Cache enhanced listings to avoid repeated expensive operations like CSV parsing and data enhancement.
+// Sorting and pagination are lightweight and done per request on cached data.
 let cachedListings: Listing[] | null = null;
 let cacheTimestamp = 0;
-const CACHE_DURATION = process.env.NODE_ENV === 'development' ? 30 * 1000 : 5 * 60 * 1000; // 30 seconds dev, 5 minutes prod
-
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const pageSize = parseInt(searchParams.get('pageSize') || '50', 10);
-    const sortBy = searchParams.get('sortBy') || 'name';
-    const sortOrder = searchParams.get('sortOrder') || 'asc';
-    const search = searchParams.get('search') || '';
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "50", 10);
+    const sortBy = searchParams.get("sortBy") || "name";
+    const sortOrder = searchParams.get("sortOrder") || "asc";
+    const search = searchParams.get("search") || "";
 
-    // Helper function to filter listings by search term
-    const filterListings = (listings: Listing[], searchTerm: string): Listing[] => {
-      if (!searchTerm.trim()) return listings;
-      const term = searchTerm.toLowerCase();
-      return listings.filter(listing =>
-        listing.name.toLowerCase().includes(term)
-      );
-    };
-
-    // Helper function to sort listings
-    const sortListings = (listings: Listing[]): Listing[] => {
-      return [...listings].sort((a, b) => {
-        const aValue = a[sortBy as keyof typeof a];
-        const bValue = b[sortBy as keyof typeof b];
-
-        if (aValue === null || aValue === undefined) return 1;
-        if (bValue === null || bValue === undefined) return -1;
-
-        // Handle numeric strings (like price)
-        const aNum = typeof aValue === 'string' ? parseFloat(aValue) : (typeof aValue === 'number' ? aValue : NaN);
-        const bNum = typeof bValue === 'string' ? parseFloat(bValue) : (typeof bValue === 'number' ? bValue : NaN);
-
-        if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) {
-          return sortOrder === 'asc' ? aNum - bNum : bNum - aNum;
-        }
-
-        // Fallback to string comparison
-        const aStr = String(aValue);
-        const bStr = String(bValue);
-        return sortOrder === 'asc'
-          ? aStr.localeCompare(bStr)
-          : bStr.localeCompare(aStr);
-      });
-    };
+    // Parse filter parameters
+    const filters = parseFilters(searchParams);
 
     // Read CSV from public directory
     const csvPath = path.join(process.cwd(), "src", "data", "listings.csv");
@@ -65,64 +97,21 @@ export async function GET(request: Request) {
     const fileModified = stats.mtime.getTime();
 
     // Check cache
-    if (
-      cachedListings &&
-      Date.now() - cacheTimestamp < CACHE_DURATION &&
-      fileModified <= cacheTimestamp
-    ) {
-      // Sort cached enhanced listings per request
-      const sortedListings = sortListings(cachedListings);
-
-      // Filter by search term
-      const filteredListings = filterListings(sortedListings, search);
-
-      const total = filteredListings.length;
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const paginatedData = filteredListings.slice(startIndex, endIndex);
-
-      return NextResponse.json({
-        data: paginatedData,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize)
-      });
+    if (cachedListings && isCacheValid(cacheTimestamp, fileModified)) {
+      const result = processAndPaginate(cachedListings, filters, search, sortBy, sortOrder, page, pageSize);
+      return NextResponse.json(result);
     }
 
     const csvText = fs.readFileSync(csvPath, "utf-8");
-
-    // Parse CSV
     const listings = parseCSVToListings(csvText);
-
-    // Process listings (filter invalid and outliers)
     const processedListings = processListings(listings);
-
-    // Calculate additional fields
     const enhancedListings = enhanceListings(processedListings);
 
-    // Cache the enhanced listings (before sorting, as sorting is per-request)
     cachedListings = enhancedListings;
     cacheTimestamp = Date.now();
 
-    // Sort the data
-    const sortedListings = sortListings(enhancedListings);
-
-    // Filter by search term
-    const filteredListings = filterListings(sortedListings, search);
-
-    const total = filteredListings.length;
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedData = filteredListings.slice(startIndex, endIndex);
-
-    return NextResponse.json({
-      data: paginatedData,
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize)
-    });
+    const result = processAndPaginate(enhancedListings, filters, search, sortBy, sortOrder, page, pageSize);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error loading listings:", error);
     return NextResponse.json(

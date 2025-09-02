@@ -6,11 +6,11 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="w-full"
+      className="w-full rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm"
     >
       <table
         data-slot="table"
-        className={cn("w-full caption-bottom text-sm border-0", className)}
+        className={cn("w-full caption-bottom text-sm", className)}
         {...props}
       />
     </div>
@@ -21,9 +21,8 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("[&_tr]:border-none [&_tr>th]:bg-gray-100",
+      className={cn("[&_tr>th]:bg-muted/80 [&_tr>th]:backdrop-blur-sm [&_tr]:border-none",
         "[&_tr:first-child>th:first-child]:rounded-tl-lg [&_tr:first-child>th:last-child]:rounded-tr-lg",
-        "[&_tr:last-child>th:first-child]:rounded-bl-lg [&_tr:last-child>th:last-child]:rounded-br-lg",
         className)}
       {...props}
     />
@@ -86,7 +85,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "px-2 py-2.5 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className,
       )}
       {...props}

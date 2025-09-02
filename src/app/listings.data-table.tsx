@@ -10,8 +10,9 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Filter, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDebounce } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,7 +58,9 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [searchValue, setSearchValue] = useState("");
-  const sortTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const debouncedSearchValue = useDebounce(searchValue, 300);
+  const debouncedSorting = useDebounce(sorting, 300);
 
   const table = useReactTable({
     data,
@@ -76,54 +80,47 @@ export function DataTable<TData, TValue>({
       const newSorting =
         typeof updater === "function" ? updater(sorting) : updater;
       setSorting(newSorting);
-      if (newSorting.length > 0 && onSort) {
-        // Clear existing timeout
-        if (sortTimeoutRef.current) {
-          clearTimeout(sortTimeoutRef.current);
-        }
-        // Debounce the sort call
-        sortTimeoutRef.current = setTimeout(() => {
-          const { id, desc } = newSorting[0];
-          onSort(id, desc ? "desc" : "asc");
-        }, 300); // 300ms debounce
-      }
     },
   });
 
-  // Debounce search calls
+  // Handle debounced search
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (onSearch) {
-        onSearch(searchValue);
-      }
-    }, 300); // 300ms debounce
+    if (onSearch) {
+      onSearch(debouncedSearchValue);
+    }
+  }, [debouncedSearchValue, onSearch]);
 
-    return () => clearTimeout(timer);
-  }, [searchValue, onSearch]);
-
-  // Cleanup sort timeout on unmount
+  // Handle debounced sorting
   useEffect(() => {
-    return () => {
-      if (sortTimeoutRef.current) {
-        clearTimeout(sortTimeoutRef.current);
-      }
-    };
-  }, []);
+    if (debouncedSorting.length > 0 && onSort) {
+      const { id, desc } = debouncedSorting[0];
+      onSort(id, desc ? "desc" : "asc");
+    }
+  }, [debouncedSorting, onSort]);
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-          <Input
-            placeholder="Search properties..."
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-            className="max-w-sm pl-8"
-          >
-            <Search />
-          </Input>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="w-full"
+    >
+      <div className="flex items-center relative gap-2 py-2 max-w-sm">
+        <Input
+          placeholder="Search properties..."
+          value={searchValue}
+          onChange={(event) => setSearchValue(event.target.value)}
+          className="max-w-sm pl-8"
+        >
+          <Search />
+        </Input>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button
+              variant="outline"
+              className="bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-colors"
+            >
+              <Filter className="size-3" />
               Columns
             </Button>
           </DropdownMenuTrigger>
@@ -149,7 +146,7 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
       <div className="relative max-h-[calc(100vh-300px)] overflow-auto">
-        <Table className="relative">
+        <Table>
           <TableHeader className="sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -239,6 +236,6 @@ export function DataTable<TData, TValue>({
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

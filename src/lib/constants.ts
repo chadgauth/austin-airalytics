@@ -1,0 +1,1 @@
+export const BASE_10 = 10;
