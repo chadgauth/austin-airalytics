@@ -87,15 +87,18 @@ export async function GET(request: NextRequest) {
     const minPrice = Math.floor(Math.min(...prices));
     const maxPrice = Math.ceil(Math.max(...prices));
 
-    // Calculate price volumes (100 bins across the price range)
+    // Calculate price volumes (100 logarithmic bins across the price range)
     const priceBins = 100;
     const priceCounts = new Array(priceBins).fill(0);
-    const priceStep = (maxPrice - minPrice) / (priceBins - 1);
+    const logMin = Math.log10(minPrice);
+    const logMax = Math.log10(maxPrice);
+    const logStep = (logMax - logMin) / (priceBins - 1);
 
     for (const listing of enhancedListings) {
       const val = parseFloat(listing.price.replace(/[$,]/g, ''));
-      if (!Number.isNaN(val) && val >= minPrice && val <= maxPrice) {
-        const index = Math.min(Math.floor((val - minPrice) / priceStep), priceBins - 1);
+      if (!Number.isNaN(val) && val > 0) {
+        const logVal = Math.log10(val);
+        const index = Math.min(Math.floor((logVal - logMin) / logStep), priceBins - 1);
         priceCounts[index]++;
       }
     }

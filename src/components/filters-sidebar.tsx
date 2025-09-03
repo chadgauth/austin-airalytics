@@ -238,7 +238,7 @@ export function FiltersSidebar({
             onMinChange={(value) => {
               const num = parseFloat(value);
               if (!Number.isNaN(num)) {
-                const newFilters = { ...localFilters, minPrice: num };
+                const newFilters = { ...localFilters, minPrice: Math.round(num) };
                 setLocalFilters(newFilters);
                 onFiltersChange(newFilters);
               }
@@ -246,7 +246,7 @@ export function FiltersSidebar({
             onMaxChange={(value) => {
               const num = parseFloat(value);
               if (!Number.isNaN(num)) {
-                const newFilters = { ...localFilters, maxPrice: num };
+                const newFilters = { ...localFilters, maxPrice: Math.round(num) };
                 setLocalFilters(newFilters);
                 onFiltersChange(newFilters);
               }
@@ -254,7 +254,7 @@ export function FiltersSidebar({
             min={filterOptions.minPrice}
             max={filterOptions.maxPrice}
             step={1}
-            formatValue={(value) => `$${value}`}
+            formatValue={(value) => `$${Math.round(value)}`}
             volumes={filterOptions.priceVolumes}
           />
         )}
