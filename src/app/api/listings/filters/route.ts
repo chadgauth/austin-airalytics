@@ -27,6 +27,7 @@ const cache = new Map<
       minReviewScore: number;
       maxReviewScore: number;
       zipAveragePrices: Record<string, number>;
+      priceVolumes: number[];
       accommodatesVolumes: number[];
       bedroomsVolumes: number[];
       reviewScoreVolumes: number[];
@@ -81,10 +82,23 @@ export async function GET(request: NextRequest) {
 
     // Calculate price range (always from all listings)
     const prices = enhancedListings
-      .map((l) => parseFloat(l.price))
+      .map((l) => parseFloat(l.price.replace(/[$,]/g, '')))
       .filter((p) => !Number.isNaN(p) && p > 0);
     const minPrice = Math.floor(Math.min(...prices));
     const maxPrice = Math.ceil(Math.max(...prices));
+
+    // Calculate price volumes (100 bins across the price range)
+    const priceBins = 100;
+    const priceCounts = new Array(priceBins).fill(0);
+    const priceStep = (maxPrice - minPrice) / (priceBins - 1);
+
+    for (const listing of enhancedListings) {
+      const val = parseFloat(listing.price.replace(/[$,]/g, ''));
+      if (!Number.isNaN(val) && val >= minPrice && val <= maxPrice) {
+        const index = Math.min(Math.floor((val - minPrice) / priceStep), priceBins - 1);
+        priceCounts[index]++;
+      }
+    }
 
     // Calculate accommodates range
     const accommodates = enhancedListings
@@ -188,6 +202,7 @@ export async function GET(request: NextRequest) {
       minReviewScore,
       maxReviewScore,
       zipAveragePrices,
+      priceVolumes: priceCounts,
       accommodatesVolumes: accommodatesCounts,
       bedroomsVolumes: bedroomsCounts,
       reviewScoreVolumes: reviewScoreCounts,

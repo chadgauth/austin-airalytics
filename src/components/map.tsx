@@ -227,7 +227,7 @@ export default function ListingsMap({ className, filters }: ListingsMapProps) {
   ];
 
   return (
-    <div className={`h-80 sm:h-96 lg:h-[500px] w-full rounded-lg overflow-hidden border shadow-sm ${className}`}>
+    <div className={`h-80 sm:h-96 lg:h-[500px] w-full rounded-lg overflow-hidden border shadow-sm ${className || ''}`}>
       <MapContainer
         center={center}
         zoom={12}

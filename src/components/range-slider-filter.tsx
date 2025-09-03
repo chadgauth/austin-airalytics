@@ -57,7 +57,7 @@ export function RangeSliderFilter({
             <Input
               id={`min-${label}`}
               type="number"
-              value={format(minValue)}
+              value={minValue}
               onChange={(e) => onMinChange(e.target.value)}
               step={step}
               min={min}
@@ -65,14 +65,14 @@ export function RangeSliderFilter({
               className="h-6 mx-auto w-full text-xs"
             />
             <Label htmlFor={`min-${label}`} className="text-xs block mt-1">
-              Min
+              Min ({format(minValue)})
             </Label>
           </div>
           <div className="flex-1 text-center">
             <Input
               id={`max-${label}`}
               type="number"
-              value={format(maxValue)}
+              value={maxValue}
               onChange={(e) => onMaxChange(e.target.value)}
               step={step}
               min={min}
@@ -80,7 +80,7 @@ export function RangeSliderFilter({
               className="h-6 mx-auto w-full text-xs"
             />
             <Label htmlFor={`max-${label}`} className="text-xs block mt-1">
-              Max
+              Max ({format(maxValue)})
             </Label>
           </div>
         </div>
