@@ -70,13 +70,13 @@ export default function Dashboard() {
     roomType: [],
     propertyType: [],
     minPrice: 0,
-    maxPrice: 1000,
-    minAccommodates: 1,
-    maxAccommodates: 16,
+    maxPrice: Infinity, // Will be updated with actual max from filterOptions
+    minAccommodates: 0,
+    maxAccommodates: Infinity, // Will be updated with actual max from filterOptions
     minBedrooms: 0,
-    maxBedrooms: 10,
+    maxBedrooms: Infinity, // Will be updated with actual max from filterOptions
     minReviewScore: 0,
-    maxReviewScore: 5,
+    maxReviewScore: Infinity, // Will be updated with actual max from filterOptions
     hostIsSuperhost: false,
     instantBookable: false,
   });
@@ -130,16 +130,16 @@ export default function Dashboard() {
         if (currentFilters.minPrice > 0) {
           params.append("minPrice", currentFilters.minPrice.toString());
         }
-        if (currentFilters.maxPrice < 1000) {
+        if (currentFilters.maxPrice < Infinity && currentFilters.maxPrice !== filterOptions?.maxPrice) {
           params.append("maxPrice", currentFilters.maxPrice.toString());
         }
-        if (currentFilters.minAccommodates > 1) {
+        if (currentFilters.minAccommodates > 0) {
           params.append(
             "minAccommodates",
             currentFilters.minAccommodates.toString(),
           );
         }
-        if (currentFilters.maxAccommodates < 16) {
+        if (currentFilters.maxAccommodates < Infinity && currentFilters.maxAccommodates !== filterOptions?.maxAccommodates) {
           params.append(
             "maxAccommodates",
             currentFilters.maxAccommodates.toString(),
@@ -148,7 +148,7 @@ export default function Dashboard() {
         if (currentFilters.minBedrooms > 0) {
           params.append("minBedrooms", currentFilters.minBedrooms.toString());
         }
-        if (currentFilters.maxBedrooms < 10) {
+        if (currentFilters.maxBedrooms < Infinity && currentFilters.maxBedrooms !== filterOptions?.maxBedrooms) {
           params.append("maxBedrooms", currentFilters.maxBedrooms.toString());
         }
         if (currentFilters.minReviewScore > 0) {
@@ -157,7 +157,7 @@ export default function Dashboard() {
             currentFilters.minReviewScore.toString(),
           );
         }
-        if (currentFilters.maxReviewScore < 5) {
+        if (currentFilters.maxReviewScore < Infinity && currentFilters.maxReviewScore !== filterOptions?.maxReviewScore) {
           params.append(
             "maxReviewScore",
             currentFilters.maxReviewScore.toString(),
@@ -183,7 +183,7 @@ export default function Dashboard() {
         setLoading(false);
       }
     },
-    [pageSize, sortBy, sortOrder, search, filters],
+    [pageSize, sortBy, sortOrder, search, filters, filterOptions],
   );
 
   const handleSort = useCallback((columnId: string, order: "asc" | "desc") => {

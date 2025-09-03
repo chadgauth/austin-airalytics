@@ -2,10 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Building, Home, User, Users } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RangeSliderFilter } from "@/components/range-slider-filter";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDebounce } from "@/lib/utils";
 
@@ -55,13 +54,11 @@ export function FiltersSidebar({
   filters,
   filterOptions,
   onFiltersChange,
-  onClearFilters,
 }: FiltersSidebarProps) {
   const [localFilters, setLocalFilters] = useState<Filters>(filters);
   const [sortedZipCodes, setSortedZipCodes] = useState<string[]>([]);
   const [highlightedZips, setHighlightedZips] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const prevFiltersRef = useRef<string>("");
 
   const debouncedFilters = useDebounce(localFilters, 300);
 
@@ -125,7 +122,6 @@ export function FiltersSidebar({
       : current.filter((item) => item !== value);
     const newFilters = { ...localFilters, [key]: newValue };
     setLocalFilters(newFilters);
-    onFiltersChange(newFilters);
   };
 
 
@@ -233,14 +229,12 @@ export function FiltersSidebar({
                 maxPrice: max,
               };
               setLocalFilters(newFilters);
-              onFiltersChange(newFilters);
             }}
             onMinChange={(value) => {
               const num = parseFloat(value);
               if (!Number.isNaN(num)) {
                 const newFilters = { ...localFilters, minPrice: Math.round(num) };
                 setLocalFilters(newFilters);
-                onFiltersChange(newFilters);
               }
             }}
             onMaxChange={(value) => {
@@ -248,7 +242,6 @@ export function FiltersSidebar({
               if (!Number.isNaN(num)) {
                 const newFilters = { ...localFilters, maxPrice: Math.round(num) };
                 setLocalFilters(newFilters);
-                onFiltersChange(newFilters);
               }
             }}
             min={filterOptions.minPrice}
@@ -300,14 +293,12 @@ export function FiltersSidebar({
               maxAccommodates: max,
             };
             setLocalFilters(newFilters);
-            onFiltersChange(newFilters);
           }}
           onMinChange={(value) => {
             const num = parseFloat(value);
             if (!Number.isNaN(num)) {
               const newFilters = { ...localFilters, minAccommodates: num };
               setLocalFilters(newFilters);
-              onFiltersChange(newFilters);
             }
           }}
           onMaxChange={(value) => {
@@ -315,7 +306,6 @@ export function FiltersSidebar({
             if (!Number.isNaN(num)) {
               const newFilters = { ...localFilters, maxAccommodates: num };
               setLocalFilters(newFilters);
-              onFiltersChange(newFilters);
             }
           }}
           min={filterOptions.minAccommodates}
@@ -336,14 +326,12 @@ export function FiltersSidebar({
               maxBedrooms: max,
             };
             setLocalFilters(newFilters);
-            onFiltersChange(newFilters);
           }}
           onMinChange={(value) => {
             const num = parseFloat(value);
             if (!Number.isNaN(num)) {
               const newFilters = { ...localFilters, minBedrooms: num };
               setLocalFilters(newFilters);
-              onFiltersChange(newFilters);
             }
           }}
           onMaxChange={(value) => {
@@ -351,7 +339,6 @@ export function FiltersSidebar({
             if (!Number.isNaN(num)) {
               const newFilters = { ...localFilters, maxBedrooms: num };
               setLocalFilters(newFilters);
-              onFiltersChange(newFilters);
             }
           }}
           min={filterOptions.minBedrooms}
@@ -443,14 +430,12 @@ export function FiltersSidebar({
               maxReviewScore: max,
             };
             setLocalFilters(newFilters);
-            onFiltersChange(newFilters);
           }}
           onMinChange={(value) => {
             const num = parseFloat(value);
             if (!Number.isNaN(num)) {
               const newFilters = { ...localFilters, minReviewScore: num };
               setLocalFilters(newFilters);
-              onFiltersChange(newFilters);
             }
           }}
           onMaxChange={(value) => {
@@ -458,7 +443,6 @@ export function FiltersSidebar({
             if (!Number.isNaN(num)) {
               const newFilters = { ...localFilters, maxReviewScore: num };
               setLocalFilters(newFilters);
-              onFiltersChange(newFilters);
             }
           }}
           min={filterOptions.minReviewScore}
@@ -482,7 +466,6 @@ export function FiltersSidebar({
                     hostIsSuperhost: checked as boolean,
                   };
                   setLocalFilters(newFilters);
-                  onFiltersChange(newFilters);
                 }}
               />
               <Label htmlFor="hostSuperhost" className="text-sm">
@@ -499,7 +482,6 @@ export function FiltersSidebar({
                     instantBookable: checked as boolean,
                   };
                   setLocalFilters(newFilters);
-                  onFiltersChange(newFilters);
                 }}
               />
               <Label htmlFor="instantBookable" className="text-sm">
