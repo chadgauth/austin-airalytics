@@ -81,19 +81,3 @@ export type Listing = {
   potential_revenue: number;
   risk_score: number;
 };
-
-export interface Filters {
-  zip: string[];
-  roomType: string[];
-  propertyType: string[];
-  minPrice: number | null;
-  maxPrice: number | null;
-  minAccommodates: number | null;
-  maxAccommodates: number | null;
-  minBedrooms: number | null;
-  maxBedrooms: number | null;
-  minReviewScore: number | null;
-  maxReviewScore: number | null;
-  hostIsSuperhost: boolean;
-  instantBookable: boolean;
-}

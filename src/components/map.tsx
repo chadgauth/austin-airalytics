@@ -1,10 +1,19 @@
 "use client";
-
 import { Icon } from "leaflet";
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useEffect, useMemo, useState } from "react";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet.markercluster";
-import type { Listing } from "@/types/listings";
+import { trpc } from "@/lib/trpc/client";
+import type { Filters } from "@/types/filters";
+
+interface MapListing {
+  latitude: string;
+  longitude: string;
+  name: string;
+  neighbourhood_cleansed: string;
+  price: string;
+  room_type: string;
+}
 
 // Fix for default markers in react-leaflet
 // biome-ignore lint/suspicious/noExplicitAny: leaflet type not needed
@@ -18,29 +27,15 @@ Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-interface Filters {
-  zip: string[];
-  roomType: string[];
-  propertyType: string[];
-  minPrice: number;
-  maxPrice: number;
-  minAccommodates: number;
-  maxAccommodates: number;
-  minBedrooms: number;
-  maxBedrooms: number;
-  minReviewScore: number;
-  maxReviewScore: number;
-  hostIsSuperhost: boolean;
-  instantBookable: boolean;
-}
-
 interface ListingsMapProps {
   className?: string;
   filters?: Filters;
+  isMobile?: boolean;
+  mobileView?: "map" | "list";
 }
 
 // Component to handle markers with clustering
-function MarkersWithClustering({ listings }: { listings: Listing[] }) {
+function MarkersWithClustering({ listings, isLoading }: { listings: MapListing[]; isLoading: boolean }) {
   const map = useMap();
 
   useEffect(() => {
@@ -90,6 +85,12 @@ function MarkersWithClustering({ listings }: { listings: Listing[] }) {
               </div>
             </div>
           `);
+
+          // Dim marker when loading
+          if (isLoading) {
+            marker.setOpacity(0.3);
+          }
+
           markers.addLayer(marker);
         }
       }
@@ -101,109 +102,127 @@ function MarkersWithClustering({ listings }: { listings: Listing[] }) {
     return () => {
       map.removeLayer(markers);
     };
-  }, [map, listings]);
+  }, [map, listings, isLoading]);
 
   return null;
 }
 
-export default function ListingsMap({ className, filters }: ListingsMapProps) {
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+// Component to track map position changes
+function MapEventHandler({
+  onCenterChange,
+  onZoomChange,
+}: {
+  onCenterChange: (center: [number, number]) => void;
+  onZoomChange: (zoom: number) => void;
+}) {
+  useMapEvents({
+    moveend: (e) => {
+      const map = e.target;
+      const center = map.getCenter();
+      onCenterChange([center.lat, center.lng]);
+    },
+    zoomend: (e) => {
+      const map = e.target;
+      onZoomChange(map.getZoom());
+    },
+  });
+  return null;
+}
+
+
+export default function ListingsMap({
+  className,
+  filters,
+  isMobile,
+  mobileView,
+}: ListingsMapProps) {
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const [userCenter, setUserCenter] = useState<[number, number] | null>(null);
+  const [userZoom, setUserZoom] = useState<number>(12);
+
+  const { data: mapData, isLoading, error: trpcError } = trpc.listings.getMapData.useQuery(
+    filters ? {
+      filters: {
+        zipCodes: filters.zipCodes,
+        roomTypes: filters.roomTypes,
+        propertyTypes: filters.propertyTypes,
+        minPrice: filters.minPrice ?? undefined,
+        maxPrice: filters.maxPrice ?? undefined,
+        minAccommodates: filters.minAccommodates ?? undefined,
+        maxAccommodates: filters.maxAccommodates ?? undefined,
+        minBedrooms: filters.minBedrooms ?? undefined,
+        maxBedrooms: filters.maxBedrooms ?? undefined,
+        minReviewScore: filters.minReviewScore ?? undefined,
+        maxReviewScore: filters.maxReviewScore ?? undefined,
+        hostIsSuperhost: filters.hostIsSuperhost,
+        instantBookable: filters.instantBookable,
+      },
+    } : { filters: undefined },
+    {
+      enabled: !isMobile || mobileView === "map",
+    }
+  );
 
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        const params = new URLSearchParams();
-
-        if (filters?.zip && filters.zip.length > 0) {
-          params.append("zip", filters.zip.join(","));
-        }
-        if (filters?.roomType && filters.roomType.length > 0) {
-          params.append("roomType", filters.roomType.join(","));
-        }
-        if (filters?.propertyType && filters.propertyType.length > 0) {
-          params.append("propertyType", filters.propertyType.join(","));
-        }
-        if (filters?.minPrice && filters.minPrice > 0) {
-          params.append("minPrice", filters.minPrice.toString());
-        }
-        if (filters?.maxPrice && filters.maxPrice < 1000) {
-          params.append("maxPrice", filters.maxPrice.toString());
-        }
-        if (filters?.minAccommodates && filters.minAccommodates > 1) {
-          params.append("minAccommodates", filters.minAccommodates.toString());
-        }
-        if (filters?.maxAccommodates && filters.maxAccommodates < 16) {
-          params.append("maxAccommodates", filters.maxAccommodates.toString());
-        }
-        if (filters?.minBedrooms && filters.minBedrooms > 0) {
-          params.append("minBedrooms", filters.minBedrooms.toString());
-        }
-        if (filters?.maxBedrooms && filters.maxBedrooms < 10) {
-          params.append("maxBedrooms", filters.maxBedrooms.toString());
-        }
-        if (filters?.minReviewScore && filters.minReviewScore > 0) {
-          params.append("minReviewScore", filters.minReviewScore.toString());
-        }
-        if (filters?.maxReviewScore && filters.maxReviewScore < 5) {
-          params.append("maxReviewScore", filters.maxReviewScore.toString());
-        }
-        if (filters?.hostIsSuperhost) {
-          params.append("hostIsSuperhost", "true");
-        }
-        if (filters?.instantBookable) {
-          params.append("instantBookable", "true");
-        }
-
-        const response = await fetch(`/api/listings/map?${params.toString()}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch listings");
-        }
-        const data = await response.json();
-        setListings(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load listings",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchListings();
-  }, [filters]);
-
-  if (loading) {
-    return (
-      <div
-        className={`flex items-center justify-center h-96 bg-muted rounded-lg ${className}`}
-      >
-        <div className="text-muted-foreground">Loading map...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div
-        className={`flex items-center justify-center h-96 bg-muted rounded-lg ${className}`}
-      >
-        <div className="text-destructive">Error: {error}</div>
-      </div>
-    );
-  }
+    if (!isLoading && mapData) {
+      setHasLoaded(true);
+    }
+  }, [isLoading, mapData]);
 
   // Calculate center and bounds
-  const validListings = listings.filter(
-    (listing) =>
+  const validListings = (mapData || []).filter(
+    (listing: MapListing) =>
       listing.latitude &&
       listing.longitude &&
       !Number.isNaN(parseFloat(listing.latitude)) &&
       !Number.isNaN(parseFloat(listing.longitude)),
   );
 
-  if (validListings.length === 0) {
+  // Calculate center from listings (only for initial load)
+  const calculatedCenter = useMemo(() => {
+    if (validListings.length === 0) return [30.2672, -97.7431] as [number, number]; // Austin, TX default
+
+    const lat = validListings.reduce(
+      (sum: number, listing: MapListing) => sum + parseFloat(listing.latitude),
+      0,
+    ) / validListings.length;
+
+    const lng = validListings.reduce(
+      (sum: number, listing: MapListing) => sum + parseFloat(listing.longitude),
+      0,
+    ) / validListings.length;
+
+    return [lat, lng] as [number, number];
+  }, [validListings]);
+
+  // Update stored center on initial load only
+  useEffect(() => {
+    if (!mapCenter && validListings.length > 0 && !isLoading) {
+      setMapCenter(calculatedCenter);
+    }
+  }, [mapCenter, validListings.length, isLoading, calculatedCenter]);
+
+  // Use user center if available, otherwise stored center, otherwise default
+  const displayCenter = userCenter || mapCenter || [30.2672, -97.7431] as [number, number];
+  const displayZoom = userZoom;
+
+  // Handle error state
+  if (trpcError && !isLoading) {
+    console.error("Map data loading error:", trpcError);
+    return (
+      <div
+        className={`flex items-center justify-center h-96 bg-muted rounded-lg ${className}`}
+      >
+        <div className="text-muted-foreground">
+          Failed to load map data. Please try refreshing the page.
+        </div>
+      </div>
+    );
+  }
+
+  // Handle no data state
+  if (!isLoading && validListings.length === 0 && hasLoaded) {
     return (
       <div
         className={`flex items-center justify-center h-96 bg-muted rounded-lg ${className}`}
@@ -215,22 +234,13 @@ export default function ListingsMap({ className, filters }: ListingsMapProps) {
     );
   }
 
-  const center: [number, number] = [
-    validListings.reduce(
-      (sum, listing) => sum + parseFloat(listing.latitude),
-      0,
-    ) / validListings.length,
-    validListings.reduce(
-      (sum, listing) => sum + parseFloat(listing.longitude),
-      0,
-    ) / validListings.length,
-  ];
-
   return (
-    <div className={`h-80 sm:h-96 lg:h-[500px] w-full rounded-lg overflow-hidden border shadow-sm ${className || ''}`}>
+    <div
+      className={`relative h-80 sm:h-96 lg:h-[500px] w-full rounded-lg overflow-hidden border shadow-sm ${className || ""}`}
+    >
       <MapContainer
-        center={center}
-        zoom={12}
+        center={displayCenter}
+        zoom={displayZoom}
         style={{ height: "100%", width: "100%" }}
         className="rounded-lg"
         zoomControl={true}
@@ -244,7 +254,12 @@ export default function ListingsMap({ className, filters }: ListingsMapProps) {
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
 
-        <MarkersWithClustering listings={validListings} />
+        <MapEventHandler
+          onCenterChange={setUserCenter}
+          onZoomChange={setUserZoom}
+        />
+
+        <MarkersWithClustering listings={validListings} isLoading={isLoading} />
       </MapContainer>
     </div>
   );

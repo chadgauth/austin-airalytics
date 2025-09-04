@@ -43,3 +43,35 @@ export const decodeHtmlEntities = (str: string): string => {
     (entity) => entities.get(entity) || entity,
   );
 };
+
+export const formatCurrency = (value: string | number | null | undefined) => {
+  if (value == null) {
+    return "N/A";
+  }
+
+  const strValue = typeof value === 'string' ? value : value.toString();
+  const numValue = parseFloat(strValue.replace(/[^0-9.-]/g, ''));
+
+  if (Number.isNaN(numValue)) {
+    return "N/A";
+  }
+
+  const formatted = numValue.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  // Split into dollars and cents
+  const [dollars, cents] = formatted.split(".");
+
+  return (
+    <span>
+      {dollars}
+      <sup className="text-[9px] pl-[1px] text-gray-400 font-semibold relative -top-1">
+        {cents}
+      </sup>
+    </span>
+  );
+};

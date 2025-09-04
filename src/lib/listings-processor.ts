@@ -1,5 +1,6 @@
 import { BASE_10 } from "./constants";
-import type { Filters, Listing } from "@/types/listings";
+import type { Filters } from "@/types/filters";
+import type { Listing } from "@/types/listings";
 
 /**
  * Helper function to filter by string array values
@@ -59,9 +60,9 @@ export function filterListings(
   filtered = filterByStringArray(
     filtered,
     "neighbourhood_cleansed",
-    filters.zip,
+    filters.zipCodes,
   );
-  filtered = filterByStringArray(filtered, "room_type", filters.roomType);
+  filtered = filterByStringArray(filtered, "room_type", filters.roomTypes);
   filtered = filterByNumericRange(
     filtered,
     "price",
@@ -72,7 +73,7 @@ export function filterListings(
   filtered = filterByStringArray(
     filtered,
     "property_type",
-    filters.propertyType,
+    filters.propertyTypes,
   );
   filtered = filterByNumericRange(
     filtered,
@@ -330,17 +331,50 @@ export function enhanceListings(listings: Listing[]): Listing[] {
   });
 }
 /**
+ * Calculates volume distribution (histogram) for numeric values.
+ * @param values Array of numeric values
+ * @param min Minimum value for the range
+ * @param max Maximum value for the range
+ * @param bins Number of bins (default 50)
+ * @returns Array of counts per bin
+ */
+export function calculateVolumes(
+  values: number[],
+  min: number,
+  max: number,
+  bins: number = 50,
+): number[] {
+  if (values.length === 0 || min >= max) {
+    return new Array(bins).fill(0);
+  }
+
+  const range = max - min;
+  const binSize = range / bins;
+  const volumes = new Array(bins).fill(0);
+
+  values.forEach((value) => {
+    if (value >= min && value <= max) {
+      const bin = Math.floor((value - min) / binSize);
+      const clampedBin = Math.min(bin, bins - 1);
+      volumes[clampedBin]++;
+    }
+  });
+
+  return volumes;
+}
+
+/**
  * Parses search parameters into Filters object.
  */
 export function parseFilters(searchParams: URLSearchParams): Filters {
   const zipParam = searchParams.get("zip");
-  const zip = zipParam ? zipParam.split(",") : [];
+  const zipCodes = zipParam ? zipParam.split(",") : [];
 
   const roomTypeParam = searchParams.get("roomType");
-  const roomType = roomTypeParam ? roomTypeParam.split(",") : [];
+  const roomTypes = roomTypeParam ? roomTypeParam.split(",") : [];
 
   const propertyTypeParam = searchParams.get("propertyType");
-  const propertyType = propertyTypeParam ? propertyTypeParam.split(",") : [];
+  const propertyTypes = propertyTypeParam ? propertyTypeParam.split(",") : [];
 
   const minPriceParam = searchParams.get("minPrice");
   const minPrice = minPriceParam ? parseFloat(minPriceParam) : null;
@@ -378,9 +412,9 @@ export function parseFilters(searchParams: URLSearchParams): Filters {
   const instantBookable = searchParams.get("instantBookable") === "true";
 
   return {
-    zip,
-    roomType,
-    propertyType,
+    zipCodes,
+    roomTypes,
+    propertyTypes,
     minPrice,
     maxPrice,
     minAccommodates,

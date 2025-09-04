@@ -1,0 +1,1208 @@
+{
+  "summary": {
+    "total_listings": 15187,
+    "cleaned_listings": 9639,
+    "avg_price": 150.39713663243074,
+    "median_price": 126,
+    "model_coefficients": [
+      16.76159345611439
+    ],
+    "model_intercept": 70.71218398869324
+  },
+  "neighbourhood_analysis": [
+    {
+      "neighbourhood": "78701",
+      "avg_price": 203.98275862068965,
+      "count": 754,
+      "min_price": 23,
+      "max_price": 449
+    },
+    {
+      "neighbourhood": "78702",
+      "avg_price": 167.94746716697935,
+      "count": 1066,
+      "min_price": 35,
+      "max_price": 449
+    },
+    {
+      "neighbourhood": "78703",
+      "avg_price": 169.35731414868104,
+      "count": 417,
+      "min_price": 44,
+      "max_price": 436
+    },
+    {
+      "neighbourhood": "78704",
+      "avg_price": 159.80375939849625,
+      "count": 1330,
+      "min_price": 25,
+      "max_price": 448
+    },
+    {
+      "neighbourhood": "78705",
+      "avg_price": 107.39237057220708,
+      "count": 367,
+      "min_price": 20,
+      "max_price": 438
+    },
+    {
+      "neighbourhood": "78712",
+      "avg_price": 95,
+      "count": 1,
+      "min_price": 95,
+      "max_price": 95
+    },
+    {
+      "neighbourhood": "78717",
+      "avg_price": 143.05,
+      "count": 40,
+      "min_price": 33,
+      "max_price": 349
+    },
+    {
+      "neighbourhood": "78719",
+      "avg_price": 87.66666666666667,
+      "count": 15,
+      "min_price": 49,
+      "max_price": 271
+    },
+    {
+      "neighbourhood": "78721",
+      "avg_price": 151.43356643356643,
+      "count": 286,
+      "min_price": 25,
+      "max_price": 448
+    },
+    {
+      "neighbourhood": "78722",
+      "avg_price": 151.78181818181818,
+      "count": 165,
+      "min_price": 32,
+      "max_price": 400
+    },
+    {
+      "neighbourhood": "78723",
+      "avg_price": 143.6676923076923,
+      "count": 325,
+      "min_price": 34,
+      "max_price": 435
+    },
+    {
+      "neighbourhood": "78724",
+      "avg_price": 124.95294117647059,
+      "count": 170,
+      "min_price": 22,
+      "max_price": 385
+    },
+    {
+      "neighbourhood": "78725",
+      "avg_price": 125.28169014084507,
+      "count": 71,
+      "min_price": 26,
+      "max_price": 350
+    },
+    {
+      "neighbourhood": "78726",
+      "avg_price": 178.78571428571428,
+      "count": 14,
+      "min_price": 57,
+      "max_price": 412
+    },
+    {
+      "neighbourhood": "78727",
+      "avg_price": 123.85925925925926,
+      "count": 135,
+      "min_price": 24,
+      "max_price": 438
+    },
+    {
+      "neighbourhood": "78728",
+      "avg_price": 118.07317073170732,
+      "count": 82,
+      "min_price": 39,
+      "max_price": 343
+    },
+    {
+      "neighbourhood": "78729",
+      "avg_price": 142.0076923076923,
+      "count": 130,
+      "min_price": 23,
+      "max_price": 432
+    },
+    {
+      "neighbourhood": "78730",
+      "avg_price": 165.46666666666667,
+      "count": 15,
+      "min_price": 67,
+      "max_price": 400
+    },
+    {
+      "neighbourhood": "78731",
+      "avg_price": 157.16901408450704,
+      "count": 71,
+      "min_price": 32,
+      "max_price": 444
+    },
+    {
+      "neighbourhood": "78732",
+      "avg_price": 214.4,
+      "count": 35,
+      "min_price": 34,
+      "max_price": 408
+    },
+    {
+      "neighbourhood": "78733",
+      "avg_price": 213.91666666666666,
+      "count": 48,
+      "min_price": 65,
+      "max_price": 433
+    },
+    {
+      "neighbourhood": "78734",
+      "avg_price": 198.125,
+      "count": 224,
+      "min_price": 34,
+      "max_price": 447
+    },
+    {
+      "neighbourhood": "78735",
+      "avg_price": 109.08510638297872,
+      "count": 47,
+      "min_price": 40,
+      "max_price": 399
+    },
+    {
+      "neighbourhood": "78736",
+      "avg_price": 191.140625,
+      "count": 64,
+      "min_price": 60,
+      "max_price": 424
+    },
+    {
+      "neighbourhood": "78737",
+      "avg_price": 191.33333333333334,
+      "count": 123,
+      "min_price": 9,
+      "max_price": 446
+    },
+    {
+      "neighbourhood": "78738",
+      "avg_price": 183.2826086956522,
+      "count": 46,
+      "min_price": 53,
+      "max_price": 393
+    },
+    {
+      "neighbourhood": "78739",
+      "avg_price": 155,
+      "count": 25,
+      "min_price": 45,
+      "max_price": 429
+    },
+    {
+      "neighbourhood": "78741",
+      "avg_price": 123.09823182711199,
+      "count": 509,
+      "min_price": 29,
+      "max_price": 443
+    },
+    {
+      "neighbourhood": "78742",
+      "avg_price": 130.25,
+      "count": 4,
+      "min_price": 63,
+      "max_price": 299
+    },
+    {
+      "neighbourhood": "78744",
+      "avg_price": 118.7090395480226,
+      "count": 354,
+      "min_price": 25,
+      "max_price": 440
+    },
+    {
+      "neighbourhood": "78745",
+      "avg_price": 145.23693379790942,
+      "count": 574,
+      "min_price": 24,
+      "max_price": 447
+    },
+    {
+      "neighbourhood": "78746",
+      "avg_price": 215.6320754716981,
+      "count": 106,
+      "min_price": 40,
+      "max_price": 446
+    },
+    {
+      "neighbourhood": "78747",
+      "avg_price": 134.46315789473684,
+      "count": 95,
+      "min_price": 28,
+      "max_price": 400
+    },
+    {
+      "neighbourhood": "78748",
+      "avg_price": 144.88028169014083,
+      "count": 142,
+      "min_price": 30,
+      "max_price": 362
+    },
+    {
+      "neighbourhood": "78749",
+      "avg_price": 152.16666666666666,
+      "count": 90,
+      "min_price": 38,
+      "max_price": 425
+    },
+    {
+      "neighbourhood": "78750",
+      "avg_price": 128.2,
+      "count": 45,
+      "min_price": 32,
+      "max_price": 410
+    },
+    {
+      "neighbourhood": "78751",
+      "avg_price": 97.37758112094396,
+      "count": 339,
+      "min_price": 9,
+      "max_price": 435
+    },
+    {
+      "neighbourhood": "78752",
+      "avg_price": 119.02645502645503,
+      "count": 189,
+      "min_price": 35,
+      "max_price": 406
+    },
+    {
+      "neighbourhood": "78753",
+      "avg_price": 112.44949494949495,
+      "count": 198,
+      "min_price": 32,
+      "max_price": 443
+    },
+    {
+      "neighbourhood": "78754",
+      "avg_price": 123.61344537815125,
+      "count": 119,
+      "min_price": 18,
+      "max_price": 432
+    },
+    {
+      "neighbourhood": "78756",
+      "avg_price": 115.14583333333333,
+      "count": 144,
+      "min_price": 12,
+      "max_price": 402
+    },
+    {
+      "neighbourhood": "78757",
+      "avg_price": 141.56281407035175,
+      "count": 199,
+      "min_price": 26,
+      "max_price": 425
+    },
+    {
+      "neighbourhood": "78758",
+      "avg_price": 136.31988472622479,
+      "count": 347,
+      "min_price": 10,
+      "max_price": 437
+    },
+    {
+      "neighbourhood": "78759",
+      "avg_price": 141.3613445378151,
+      "count": 119,
+      "min_price": 39,
+      "max_price": 414
+    }
+  ],
+  "room_type_analysis": [
+    {
+      "room_type": "Entire home/apt",
+      "avg_price": 162.70722713864308,
+      "count": 8136
+    },
+    {
+      "room_type": "Private room",
+      "avg_price": 86.11681914144968,
+      "count": 1421
+    },
+    {
+      "room_type": "Shared room",
+      "avg_price": 21.536231884057973,
+      "count": 69
+    },
+    {
+      "room_type": "Hotel room",
+      "avg_price": 156.46153846153845,
+      "count": 13
+    }
+  ],
+  "top_revenue_listings": [
+    {
+      "id": 4645766,
+      "occupancy_rate": 0.8493150684931506,
+      "avg_price": 32500,
+      "annual_revenue": 10075000
+    },
+    {
+      "id": 1249949289831250400,
+      "occupancy_rate": 0.9726775956284153,
+      "avg_price": 9999,
+      "annual_revenue": 3549918.1967213117
+    },
+    {
+      "id": 1354266190078004200,
+      "occupancy_rate": 0.9726027397260274,
+      "avg_price": 9999,
+      "annual_revenue": 3549644.9999999995
+    },
+    {
+      "id": 1343510292723323000,
+      "occupancy_rate": 0.958904109589041,
+      "avg_price": 10000,
+      "annual_revenue": 3500000
+    },
+    {
+      "id": 1292766925774122500,
+      "occupancy_rate": 0.958904109589041,
+      "avg_price": 9999,
+      "annual_revenue": 3499649.9999999995
+    },
+    {
+      "id": 1312586020444009500,
+      "occupancy_rate": 0.9534246575342465,
+      "avg_price": 9999,
+      "annual_revenue": 3479652
+    },
+    {
+      "id": 52895921,
+      "occupancy_rate": 0.947945205479452,
+      "avg_price": 9999,
+      "annual_revenue": 3459654
+    },
+    {
+      "id": 1174139768266463700,
+      "occupancy_rate": 0.9452054794520548,
+      "avg_price": 9999,
+      "annual_revenue": 3449655
+    },
+    {
+      "id": 1249953804315875600,
+      "occupancy_rate": 0.936986301369863,
+      "avg_price": 9999,
+      "annual_revenue": 3419658.0000000005
+    },
+    {
+      "id": 1312409867441735400,
+      "occupancy_rate": 0.9315068493150684,
+      "avg_price": 9999,
+      "annual_revenue": 3399660
+    }
+  ],
+  "sample_listings": [
+    {
+      "id": 5456,
+      "name": "Walk to 6th, Rainey St and Convention Ctr",
+      "neighbourhood": "78702",
+      "price": 101,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 5769,
+      "name": "NW Austin Room",
+      "neighbourhood": "78729",
+      "price": 45,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 6448,
+      "name": "Secluded Studio @ Zilker - King Bed, Bright & Airy",
+      "neighbourhood": "78704",
+      "price": 155,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 8502,
+      "name": "Woodland Studio Lodging",
+      "neighbourhood": "78741",
+      "price": 43,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 13035,
+      "name": "Historic house in highly walkable East Austin",
+      "neighbourhood": "78702",
+      "price": 145,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 22828,
+      "name": "Garage Apartment central SE Austin",
+      "neighbourhood": "78741",
+      "price": 58,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 27632,
+      "name": "Clarksville Condo - Weekly Rentals Only!",
+      "neighbourhood": "78703",
+      "price": 95,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 47572,
+      "name": "Cozy Private Room in North Austin for Longer Stays",
+      "neighbourhood": "78758",
+      "price": 72,
+      "accommodates": 1,
+      "room_type": "Private room"
+    },
+    {
+      "id": 51100,
+      "name": "3-level Condo in Clarksville",
+      "neighbourhood": "78703",
+      "price": 225,
+      "accommodates": 5,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 57187,
+      "name": "An Austin \"Weird\" Home in Peaceful Zilker Park",
+      "neighbourhood": "78704",
+      "price": 93,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 69303,
+      "name": "Hestia - Zilker Townhome - A Barton Springs Oasis",
+      "neighbourhood": "78704",
+      "price": 130,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 70812,
+      "name": "1 Bedroom Apt; Above the Studio",
+      "neighbourhood": "78704",
+      "price": 165,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 73005,
+      "name": "3BR Convenient Gated Townhome w/ Pool Access!",
+      "neighbourhood": "78727",
+      "price": 297,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 73289,
+      "name": "Simple 2/2 in Central Austin",
+      "neighbourhood": "78705",
+      "price": 105,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 74318,
+      "name": "Private Guest House 78704",
+      "neighbourhood": "78704",
+      "price": 74,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 76501,
+      "name": "Apartment in Historic Central Austin Home",
+      "neighbourhood": "78722",
+      "price": 106,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 77639,
+      "name": "Sweet South Austin Spot",
+      "neighbourhood": "78704",
+      "price": 114,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 78422,
+      "name": "Living the Dream on Richardine (3br 1ba E. Austin)",
+      "neighbourhood": "78702",
+      "price": 74,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 78884,
+      "name": "Cozy Barton Hills Studio | Walk to Zilker Park",
+      "neighbourhood": "78704",
+      "price": 82,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 79603,
+      "name": "Beautiful Bouldin Cottage - 78704",
+      "neighbourhood": "78704",
+      "price": 134,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 82033,
+      "name": "Clean and quiet 3/2, in Mueller area.",
+      "neighbourhood": "78723",
+      "price": 225,
+      "accommodates": 12,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 83643,
+      "name": "Fun Central Austin Convenience",
+      "neighbourhood": "78752",
+      "price": 57,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 89475,
+      "name": "2 Living Rooms, Lots of Big Beds! 3 king, 2 queen",
+      "neighbourhood": "78757",
+      "price": 365,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 90957,
+      "name": "SOCO Austin, TX Guest Room in 2Bedroom House",
+      "neighbourhood": "78704",
+      "price": 115,
+      "accommodates": 3,
+      "room_type": "Private room"
+    },
+    {
+      "id": 104386,
+      "name": "South Austin Cottage 78704 - 2BR",
+      "neighbourhood": "78704",
+      "price": 150,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 104394,
+      "name": "SanctuarySuite on Preserve near Downtown",
+      "neighbourhood": "78745",
+      "price": 53,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 113779,
+      "name": "Spacious 1BR w/ Office in Hyde Park",
+      "neighbourhood": "78751",
+      "price": 85,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 128326,
+      "name": "Austin City Limits-Private Pool-by Nature Preserve",
+      "neighbourhood": "78736",
+      "price": 236,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 140474,
+      "name": "Historic Hyde Park Home By Downtown",
+      "neighbourhood": "78751",
+      "price": 110,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 140504,
+      "name": "1915 Home w/1BR With Modern Flare",
+      "neighbourhood": "78751",
+      "price": 107,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 145210,
+      "name": "Maiden Lane Guesthouse",
+      "neighbourhood": "78705",
+      "price": 135,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 154103,
+      "name": "4 BDR Home Ideal for SXSW, F1, ACL",
+      "neighbourhood": "78704",
+      "price": 328,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 174828,
+      "name": "Light & Airy Central Austin Retreat",
+      "neighbourhood": "78752",
+      "price": 293,
+      "accommodates": 10,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 184853,
+      "name": "78704  Austin Getaway Two Bedroom monthly rental.",
+      "neighbourhood": "78704",
+      "price": 93,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 202187,
+      "name": "South Congress Apartment",
+      "neighbourhood": "78704",
+      "price": 71,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 207054,
+      "name": "2/1 Mid-Century Home 1 mile from Downtown",
+      "neighbourhood": "78741",
+      "price": 129,
+      "accommodates": 5,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 208897,
+      "name": "Bright & Cozy Haven in East Austin",
+      "neighbourhood": "78702",
+      "price": 162,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 210834,
+      "name": "S. Congress 3BR Cottage-steps to Music Lane in ATX",
+      "neighbourhood": "78704",
+      "price": 243,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 216473,
+      "name": "The Cliff Studio",
+      "neighbourhood": "78704",
+      "price": 218,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 224603,
+      "name": "Modern Studio Loft",
+      "neighbourhood": "78751",
+      "price": 81,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 233930,
+      "name": "The Treehouse 1930's Hyde Park Home",
+      "neighbourhood": "78751",
+      "price": 77,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 238657,
+      "name": "Hill House in Wonderful Bouldin!",
+      "neighbourhood": "78704",
+      "price": 125,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 240541,
+      "name": "Stay in the Birdhouse! East/Downtow",
+      "neighbourhood": "78702",
+      "price": 37,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 248515,
+      "name": "Cute Eastside Bungalow -  Perfect Austin Base",
+      "neighbourhood": "78702",
+      "price": 120,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 254232,
+      "name": "Exceptional Luxury Home Central Austin",
+      "neighbourhood": "78703",
+      "price": 424,
+      "accommodates": 5,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 271052,
+      "name": "Entire Condo is South Austin 78704!",
+      "neighbourhood": "78704",
+      "price": 135,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 277028,
+      "name": "One of a kind stay In the Heart of ATX",
+      "neighbourhood": "78703",
+      "price": 269,
+      "accommodates": 16,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 281182,
+      "name": "By UT Baseball Field/ Moody Center",
+      "neighbourhood": "78702",
+      "price": 300,
+      "accommodates": 10,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 295275,
+      "name": "Stylish 3/2/2 with large backyard",
+      "neighbourhood": "78745",
+      "price": 144,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 299282,
+      "name": "Light Filled Historic Home monthly stays Hyde Park",
+      "neighbourhood": "78751",
+      "price": 200,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 300574,
+      "name": "Historic So Austin RetroHipGroovy LoftCottage78704",
+      "neighbourhood": "78704",
+      "price": 133,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 304808,
+      "name": "Spanish Hacienda mile from downtown",
+      "neighbourhood": "78702",
+      "price": 76,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 304866,
+      "name": "Big cute clean Casita in SxSAustin TX!",
+      "neighbourhood": "78745",
+      "price": 89,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 319894,
+      "name": "The Perfect Austin Modern Home",
+      "neighbourhood": "78724",
+      "price": 160,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 321069,
+      "name": "4/3 Central Austin Mid-Century Modern",
+      "neighbourhood": "78704",
+      "price": 390,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 329172,
+      "name": "Hillside designer home,10 min.dwntn",
+      "neighbourhood": "78746",
+      "price": 426,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 329306,
+      "name": "Urban Homestead, 5 minutes to downtown",
+      "neighbourhood": "78702",
+      "price": 68,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 330301,
+      "name": "Entire Upstairs Near Apple & Domain with Hottub",
+      "neighbourhood": "78729",
+      "price": 114,
+      "accommodates": 8,
+      "room_type": "Private room"
+    },
+    {
+      "id": 333442,
+      "name": "Rare Secluded 1940s Cool Blue Private Pool",
+      "neighbourhood": "78703",
+      "price": 230,
+      "accommodates": 10,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 333815,
+      "name": "Solar Sanctuary - Austin Room",
+      "neighbourhood": "78704",
+      "price": 102,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 335231,
+      "name": "Travis Heights Urban Farm House",
+      "neighbourhood": "78704",
+      "price": 97,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 335945,
+      "name": "Comfy, Quiet and Well Appointed Austin townhome",
+      "neighbourhood": "78741",
+      "price": 65,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 337125,
+      "name": "1800 Sq ft, 3-2 home in NW Austin",
+      "neighbourhood": "78759",
+      "price": 80,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 340630,
+      "name": "2 Bedroom duplex for monthly rental",
+      "neighbourhood": "78757",
+      "price": 50,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 341596,
+      "name": "South Austin Ultra Modern",
+      "neighbourhood": "78704",
+      "price": 135,
+      "accommodates": 3,
+      "room_type": "Private room"
+    },
+    {
+      "id": 342039,
+      "name": "Garden Guesthouse, central East Austin gem.",
+      "neighbourhood": "78702",
+      "price": 116,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 342243,
+      "name": "Spacious Private Master Suite by the Month.",
+      "neighbourhood": "78759",
+      "price": 40,
+      "accommodates": 1,
+      "room_type": "Private room"
+    },
+    {
+      "id": 343258,
+      "name": "Artsy Bungalow Vibes in South Austin",
+      "neighbourhood": "78745",
+      "price": 129,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 343462,
+      "name": "Charming Family Friendly Studio",
+      "neighbourhood": "78721",
+      "price": 95,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 343889,
+      "name": "Close-in Central/East Garage Apt",
+      "neighbourhood": "78702",
+      "price": 55,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 345473,
+      "name": "Exquisite SoCo Cottage near Shops and Restaurants",
+      "neighbourhood": "78704",
+      "price": 307,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 345536,
+      "name": "Artist's Hm. in Hip Bouldin Creek Area",
+      "neighbourhood": "78704",
+      "price": 145,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 349447,
+      "name": "Eastside Cabana - Near UT,Downtown",
+      "neighbourhood": "78702",
+      "price": 107,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 349635,
+      "name": "Central Austin Bed and Private bath 78703",
+      "neighbourhood": "78703",
+      "price": 64,
+      "accommodates": 1,
+      "room_type": "Private room"
+    },
+    {
+      "id": 354263,
+      "name": "Best Little Guesthouse in Austin",
+      "neighbourhood": "78704",
+      "price": 120,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 356837,
+      "name": "Upscale 3 story Downtown Townhouse",
+      "neighbourhood": "78701",
+      "price": 224,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 357529,
+      "name": "Zilker Home walking distance to Zilker Park",
+      "neighbourhood": "78704",
+      "price": 162,
+      "accommodates": 5,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 362525,
+      "name": "Quiet Country Cottage Near Downtown",
+      "neighbourhood": "78741",
+      "price": 67,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 364269,
+      "name": "Zilker Treehouse. Minutes Music, Eateries more.",
+      "neighbourhood": "78704",
+      "price": 191,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 364402,
+      "name": "Short + long term - Central Austin!",
+      "neighbourhood": "78751",
+      "price": 60,
+      "accommodates": 1,
+      "room_type": "Private room"
+    },
+    {
+      "id": 365471,
+      "name": "Hip E.Side Downtwn House Walk 2 ALL!",
+      "neighbourhood": "78702",
+      "price": 445,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 367356,
+      "name": "2BR dog-friendly w/patio, W/D, full kitchen",
+      "neighbourhood": "78751",
+      "price": 122,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 381240,
+      "name": "SoCo  LUX Urban abode- Walk to South Congress",
+      "neighbourhood": "78704",
+      "price": 229,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 406911,
+      "name": "$pecial for June & July + Homemade Banana Bread",
+      "neighbourhood": "78704",
+      "price": 145,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 424279,
+      "name": "Steps to S. Congress, 2 bedroom oasis w/ pool",
+      "neighbourhood": "78704",
+      "price": 166,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 433996,
+      "name": "Modern Loft in the Heart of ATX | Walk to Zilker",
+      "neighbourhood": "78704",
+      "price": 93,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 461404,
+      "name": "Cute & Cozy Central Austin House",
+      "neighbourhood": "78756",
+      "price": 140,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 463790,
+      "name": "Classy Private Executive Home",
+      "neighbourhood": "78736",
+      "price": 200,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 479197,
+      "name": "Funky SoFi Condo! Walk downtown! Private bathroom",
+      "neighbourhood": "78704",
+      "price": 50,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 485360,
+      "name": "Downtown Condo with Austin's skyline view!",
+      "neighbourhood": "78702",
+      "price": 158,
+      "accommodates": 2,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 501861,
+      "name": "Cozy SoCo Guest House",
+      "neighbourhood": "78704",
+      "price": 155,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 510168,
+      "name": "The Retreat",
+      "neighbourhood": "78733",
+      "price": 240,
+      "accommodates": 6,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 517430,
+      "name": "Modern Upper Level Apartment Minutes from Downtown",
+      "neighbourhood": "78705",
+      "price": 124,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 521689,
+      "name": "Austin  Oasis",
+      "neighbourhood": "78745",
+      "price": 137,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 522136,
+      "name": "Downtown Oasis - Quiet Retreat",
+      "neighbourhood": "78701",
+      "price": 123,
+      "accommodates": 4,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 525231,
+      "name": "Brentwood Guest House, Fenced Yard, Near UT/Dining",
+      "neighbourhood": "78757",
+      "price": 143,
+      "accommodates": 5,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 528338,
+      "name": "Suite Spot (Zilker)",
+      "neighbourhood": "78704",
+      "price": 99,
+      "accommodates": 3,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 542124,
+      "name": "Live Like a Local!",
+      "neighbourhood": "78702",
+      "price": 95,
+      "accommodates": 2,
+      "room_type": "Private room"
+    },
+    {
+      "id": 560094,
+      "name": "SXSW special, perfect central location, pets ok!",
+      "neighbourhood": "78704",
+      "price": 252,
+      "accommodates": 8,
+      "room_type": "Entire home/apt"
+    },
+    {
+      "id": 563735,
+      "name": "Zen Modern Home Near Downtown AUS",
+      "neighbourhood": "78704",
+      "price": 55,
+      "accommodates": 2,
+      "room_type": "Private room"
+    }
+  ]
+}

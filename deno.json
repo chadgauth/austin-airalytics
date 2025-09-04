@@ -1,0 +1,6 @@
+{
+  "nodeModulesDir": "auto",
+  "imports": {
+    "simple-statistics": "npm:simple-statistics@7.8.2"
+  }
+}

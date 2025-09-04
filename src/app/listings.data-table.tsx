@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
 import { Filter, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -29,38 +29,93 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { trpc } from "@/lib/trpc/client";
 import { useDebounce } from "@/lib/utils";
+import type { FilterOptions, Filters } from "@/types/filters";
+import type { Listing } from "@/types/listings";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+const COLUMN_LABELS: Record<string, string> = {
+  name: "Host Name / Name",
+  room_type: "Room Type",
+  price: "Price",
+  neighbourhood_cleansed: "Neighborhood",
+  potential_revenue: "Potential Revenue",
+  risk_score: "Risk Score",
+  actions: "Actions",
+};
+
+interface PaginatedResponse {
+  data: Listing[];
   total: number;
-  currentPage: number;
+  page: number;
   pageSize: number;
-  onPageChange: (page: number) => void;
-  onSort?: (columnId: string, order: "asc" | "desc") => void;
-  onSearch?: (searchTerm: string) => void;
-  loading?: boolean;
+  totalPages: number;
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  total,
-  currentPage,
-  pageSize,
-  onPageChange,
-  onSort,
-  onSearch,
-  loading = false,
-}: DataTableProps<TData, TValue>) {
+interface DataTableProps {
+  columns: ColumnDef<Listing>[];
+  filters: Filters;
+  filterOptions: FilterOptions | null;
+}
+
+export function DataTable({ columns, filters, filterOptions }: DataTableProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(50);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [searchValue, setSearchValue] = useState("");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
   const debouncedSearchValue = useDebounce(searchValue, 300);
   const debouncedSorting = useDebounce(sorting, 300);
+
+  const handleSort = useCallback((columnId: string, order: "asc" | "desc") => {
+    setSortBy(columnId);
+    setSortOrder(order);
+  }, []);
+
+  const handleSearch = useCallback((searchTerm: string) => {
+    setSearch(searchTerm);
+  }, []);
+
+  const { data: listingsData, isLoading } = trpc.listings.getListings.useQuery({
+    page: currentPage,
+    pageSize,
+    sortBy,
+    sortOrder,
+    search,
+    filters: {
+      zipCodes: filters.zipCodes,
+      roomTypes: filters.roomTypes,
+      propertyTypes: filters.propertyTypes,
+      minPrice: filters.minPrice ?? undefined,
+      maxPrice: filters.maxPrice ?? undefined,
+      minAccommodates: filters.minAccommodates ?? undefined,
+      maxAccommodates: filters.maxAccommodates ?? undefined,
+      minBedrooms: filters.minBedrooms ?? undefined,
+      maxBedrooms: filters.maxBedrooms ?? undefined,
+      minReviewScore: filters.minReviewScore ?? undefined,
+      maxReviewScore: filters.maxReviewScore ?? undefined,
+      hostIsSuperhost: filters.hostIsSuperhost,
+      instantBookable: filters.instantBookable,
+    },
+  });
+
+  useEffect(() => {
+    if (listingsData) {
+      setData(listingsData.data);
+      setTotal(listingsData.total);
+      setCurrentPage(listingsData.page);
+    }
+    setLoading(isLoading);
+  }, [listingsData, isLoading]);
+
 
   const table = useReactTable({
     data,
@@ -85,18 +140,18 @@ export function DataTable<TData, TValue>({
 
   // Handle debounced search
   useEffect(() => {
-    if (onSearch) {
-      onSearch(debouncedSearchValue);
+    if (handleSearch) {
+      handleSearch(debouncedSearchValue);
     }
-  }, [debouncedSearchValue, onSearch]);
+  }, [debouncedSearchValue, handleSearch]);
 
   // Handle debounced sorting
   useEffect(() => {
-    if (debouncedSorting.length > 0 && onSort) {
+    if (debouncedSorting.length > 0 && handleSort) {
       const { id, desc } = debouncedSorting[0];
-      onSort(id, desc ? "desc" : "asc");
+      handleSort(id, desc ? "desc" : "asc");
     }
-  }, [debouncedSorting, onSort]);
+  }, [debouncedSorting, handleSort]);
 
   return (
     <motion.div
@@ -118,7 +173,7 @@ export function DataTable<TData, TValue>({
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-colors"
+              className="bg-background/50 backdrop-blur-sm border-border/50 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 transition-colors"
             >
               <Filter className="size-3" />
               Columns
@@ -138,7 +193,7 @@ export function DataTable<TData, TValue>({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {COLUMN_LABELS[column.id] || column.id}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -218,7 +273,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(currentPage - 1)}
+            onClick={() => setCurrentPage((page) => page - 1)}
             disabled={currentPage <= 1 || loading}
           >
             Previous
@@ -229,7 +284,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(currentPage + 1)}
+            onClick={() => setCurrentPage((page) => page + 1)}
             disabled={currentPage >= Math.ceil(total / pageSize) || loading}
           >
             Next

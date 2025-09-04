@@ -1,0 +1,16 @@
+{
+  "average_price": 149.74958926615554,
+  "median_price": 126.0,
+  "total_listings": 7304,
+  "occupancy_rate": 0.14342787246111363,
+  "average_monthly_revenue": 10209.824747448187,
+  "pricing_model_rmse": 69.47882692812506,
+  "model_coefficients": {
+    "accommodates": 8.837043028474058,
+    "bedrooms": 6.646830890139013,
+    "bathrooms": 29.765826357507343,
+    "beds": 3.315951118319954,
+    "minimum_nights": -0.30031953753081475,
+    "maximum_nights": -0.03633479432127906
+  }
+}

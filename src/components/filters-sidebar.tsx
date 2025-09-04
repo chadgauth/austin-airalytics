@@ -1,74 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Building, Home, User, Users } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { RangeSliderFilter } from "@/components/range-slider-filter";
+import { Building, Home, Shield, User, Users, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import { ButtonGrid } from "@/components/button-grid";
+import { CheckboxList } from "@/components/checkbox-list";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { useDebounce } from "@/lib/utils";
-
-interface Filters {
-  zip: string[];
-  roomType: string[];
-  propertyType: string[];
-  minPrice: number;
-  maxPrice: number;
-  minAccommodates: number;
-  maxAccommodates: number;
-  minBedrooms: number;
-  maxBedrooms: number;
-  minReviewScore: number;
-  maxReviewScore: number;
-  hostIsSuperhost: boolean;
-  instantBookable: boolean;
-}
-
-interface FilterOptions {
-  zipCodes: string[];
-  roomTypes: string[];
-  propertyTypes: string[];
-  minPrice: number;
-  maxPrice: number;
-  minAccommodates: number;
-  maxAccommodates: number;
-  minBedrooms: number;
-  maxBedrooms: number;
-  minReviewScore: number;
-  maxReviewScore: number;
-  zipAveragePrices: Record<string, number>;
-  priceVolumes: number[];
-  accommodatesVolumes: number[];
-  bedroomsVolumes: number[];
-  reviewScoreVolumes: number[];
-}
+import { Slider } from "@/components/ui/slider";
+import { useFilters } from "@/lib/use-filters";
+import type { FilterOptions, Filters } from "@/types/filters";
 
 interface FiltersSidebarProps {
-  filters: Filters;
   filterOptions: FilterOptions | null;
   onFiltersChange: (filters: Filters) => void;
+  onFilterOptionsChange: (options: FilterOptions) => void;
   onClearFilters: () => void;
 }
 
-export function FiltersSidebar({
-  filters,
+export const FiltersSidebar = memo(function FiltersSidebar({
   filterOptions,
   onFiltersChange,
+  onFilterOptionsChange,
 }: FiltersSidebarProps) {
-  const [localFilters, setLocalFilters] = useState<Filters>(filters);
   const [sortedZipCodes, setSortedZipCodes] = useState<string[]>([]);
   const [highlightedZips, setHighlightedZips] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const debouncedFilters = useDebounce(localFilters, 300);
-
-  useEffect(() => {
-    setLocalFilters(filters);
-  }, [filters]);
-
-  useEffect(() => {
-    onFiltersChange(debouncedFilters);
-  }, [debouncedFilters, onFiltersChange]);
+  const {
+    localFilters,
+    handleMultiSelectChange,
+    handleBooleanChange,
+    createRangeHandlers,
+  } = useFilters(onFiltersChange, onFilterOptionsChange);
 
   // Initialize sorted zip codes when filterOptions change
   useEffect(() => {
@@ -78,8 +43,8 @@ export function FiltersSidebar({
   }, [filterOptions]);
 
   useEffect(() => {
-    if (!filterOptions) return;
-    const selected = localFilters.zip;
+    if (!filterOptions || !localFilters) return;
+    const selected = localFilters.zipCodes;
     if (selected.length === 0) {
       setSortedZipCodes(filterOptions.zipCodes);
       setHighlightedZips([]);
@@ -109,21 +74,7 @@ export function FiltersSidebar({
     setTimeout(() => {
       scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     }, 0);
-  }, [localFilters.zip, filterOptions]);
-
-  const handleMultiSelectChange = (
-    key: "zip" | "roomType" | "propertyType",
-    value: string,
-    checked: boolean,
-  ) => {
-    const current = localFilters[key];
-    const newValue = checked
-      ? [...current, value]
-      : current.filter((item) => item !== value);
-    const newFilters = { ...localFilters, [key]: newValue };
-    setLocalFilters(newFilters);
-  };
-
+  }, [localFilters, filterOptions]);
 
   const getRoomTypeIcon = (roomType: string) => {
     switch (roomType) {
@@ -140,174 +91,83 @@ export function FiltersSidebar({
     }
   };
 
-  if (!filterOptions) {
+  if (!filterOptions || !localFilters) {
     return (
-      <div className="w-full max-w-sm mx-auto space-y-6">
-        {/* Price Range Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="flex gap-3">
-            <div className="flex-1 h-10 bg-muted/30 rounded animate-pulse"></div>
-            <div className="flex-1 h-10 bg-muted/30 rounded animate-pulse"></div>
-          </div>
-        </div>
-
-        {/* Room Type Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-16 bg-muted/30 rounded-lg animate-pulse"></div>
-            ))}
-          </div>
-        </div>
-
-        {/* Accommodates Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="h-10 bg-muted/30 rounded animate-pulse"></div>
-        </div>
-
-        {/* Bedrooms Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="h-10 bg-muted/30 rounded animate-pulse"></div>
-        </div>
-
-        {/* Property Type Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-8 bg-muted/30 rounded animate-pulse"></div>
-            ))}
-          </div>
-        </div>
-
-        {/* Zip Code Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="h-4 bg-muted/30 rounded animate-pulse mb-2"></div>
-          <div className="grid grid-cols-2 gap-2">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-10 bg-muted/30 rounded animate-pulse"></div>
-            ))}
-          </div>
-        </div>
-
-        {/* Review Score Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="h-10 bg-muted/30 rounded animate-pulse"></div>
-        </div>
-
-        {/* Host Filters Loading */}
-        <div>
-          <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
-          <div className="space-y-3">
-            <div className="h-8 bg-muted/30 rounded animate-pulse"></div>
-            <div className="h-8 bg-muted/30 rounded animate-pulse"></div>
-          </div>
-        </div>
-      </div>
+      <LoadingSkeleton
+        sections={[
+          { title: true, extraElements: 2 }, // Price Range
+          { title: true, items: 4, gridCols: 2, itemHeight: "h-16" }, // Room Type
+          { title: true, items: 1, itemHeight: "h-10" }, // Accommodates
+          { title: true, items: 1, itemHeight: "h-10" }, // Bedrooms
+          { title: true, items: 3, itemHeight: "h-8" }, // Property Type
+          {
+            title: true,
+            items: 6,
+            gridCols: 2,
+            itemHeight: "h-10",
+            extraElements: 1,
+          }, // Zip Code (with extra subtitle)
+          { title: true, items: 1, itemHeight: "h-10" }, // Review Score
+          { title: true, items: 2, itemHeight: "h-8" }, // Host Filters
+        ]}
+      />
     );
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto">
-      <div className="space-y-6">
+    <div className="w-full max-w-sm mx-auto bg-white/30 backdrop-blur-sm rounded-2xl border border-neutral-200/30 p-6 shadow-sm">
+      <div className="space-y-8">
         {/* Price Range Filter - Most Important */}
         {filterOptions && (
-          <RangeSliderFilter
+          <Slider
             label="Price Range"
-            minValue={localFilters.minPrice}
-            maxValue={localFilters.maxPrice}
-            onChange={(min, max) => {
-              const newFilters = {
-                ...localFilters,
-                minPrice: min,
-                maxPrice: max,
-              };
-              setLocalFilters(newFilters);
-            }}
-            onMinChange={(value) => {
-              const num = parseFloat(value);
-              if (!Number.isNaN(num)) {
-                const newFilters = { ...localFilters, minPrice: Math.round(num) };
-                setLocalFilters(newFilters);
-              }
-            }}
-            onMaxChange={(value) => {
-              const num = parseFloat(value);
-              if (!Number.isNaN(num)) {
-                const newFilters = { ...localFilters, maxPrice: Math.round(num) };
-                setLocalFilters(newFilters);
-              }
-            }}
+            minValue={localFilters?.minPrice ?? undefined}
+            maxValue={localFilters?.maxPrice ?? undefined}
+            onRangeChange={createRangeHandlers("minPrice", "maxPrice").onChange}
+            onMinChange={
+              createRangeHandlers("minPrice", "maxPrice").onMinChange
+            }
+            onMaxChange={
+              createRangeHandlers("minPrice", "maxPrice").onMaxChange
+            }
             min={filterOptions.minPrice}
             max={filterOptions.maxPrice}
             step={1}
-            formatValue={(value) => `$${Math.round(value)}`}
+            formatValue={(value: number) => `$${Math.round(value)}`}
             volumes={filterOptions.priceVolumes}
           />
         )}
 
         {/* Room Type Filter */}
-        <div>
-          <Label className="text-base font-medium mb-3 block">Room Type</Label>
-          <div className="grid grid-cols-2 gap-3">
-            {filterOptions.roomTypes.map((type) => (
-              <div key={type} className="relative p-3 bg-muted/30 border rounded-lg hover:bg-muted/50 transition-colors">
-                <Checkbox
-                  id={`room-${type}`}
-                  className="absolute top-2 left-2"
-                  checked={localFilters.roomType.includes(type)}
-                  onCheckedChange={(checked) =>
-                    handleMultiSelectChange(
-                      "roomType",
-                      type,
-                      checked as boolean,
-                    )
-                  }
-                />
-                <div className="flex flex-col items-center space-y-1 pt-1.5">
-                  {getRoomTypeIcon(type)}
-                  <Label htmlFor={`room-${type}`} className="text-xs text-center font-medium">
-                    {type}
-                  </Label>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ButtonGrid
+          label="Room Type"
+          options={filterOptions.roomTypes.map((type) => ({
+            value: type,
+            label: type,
+            icon: getRoomTypeIcon(type),
+          }))}
+          selected={localFilters.roomTypes}
+          onChange={(value, checked) =>
+            handleMultiSelectChange("roomTypes", value, checked)
+          }
+        />
 
         {/* Accommodates Filter */}
-        <RangeSliderFilter
+        <Slider
           label="Accommodates"
-          minValue={localFilters.minAccommodates}
-          maxValue={localFilters.maxAccommodates}
-          onChange={(min, max) => {
-            const newFilters = {
-              ...localFilters,
-              minAccommodates: min,
-              maxAccommodates: max,
-            };
-            setLocalFilters(newFilters);
-          }}
-          onMinChange={(value) => {
-            const num = parseFloat(value);
-            if (!Number.isNaN(num)) {
-              const newFilters = { ...localFilters, minAccommodates: num };
-              setLocalFilters(newFilters);
-            }
-          }}
-          onMaxChange={(value) => {
-            const num = parseFloat(value);
-            if (!Number.isNaN(num)) {
-              const newFilters = { ...localFilters, maxAccommodates: num };
-              setLocalFilters(newFilters);
-            }
-          }}
+          minValue={localFilters.minAccommodates ?? undefined}
+          maxValue={localFilters.maxAccommodates ?? undefined}
+          onRangeChange={
+            createRangeHandlers("minAccommodates", "maxAccommodates").onChange
+          }
+          onMinChange={
+            createRangeHandlers("minAccommodates", "maxAccommodates")
+              .onMinChange
+          }
+          onMaxChange={
+            createRangeHandlers("minAccommodates", "maxAccommodates")
+              .onMaxChange
+          }
           min={filterOptions.minAccommodates}
           max={filterOptions.maxAccommodates}
           step={1}
@@ -315,32 +175,19 @@ export function FiltersSidebar({
         />
 
         {/* Bedrooms Filter */}
-        <RangeSliderFilter
+        <Slider
           label="Bedrooms"
-          minValue={localFilters.minBedrooms}
-          maxValue={localFilters.maxBedrooms}
-          onChange={(min, max) => {
-            const newFilters = {
-              ...localFilters,
-              minBedrooms: min,
-              maxBedrooms: max,
-            };
-            setLocalFilters(newFilters);
-          }}
-          onMinChange={(value) => {
-            const num = parseFloat(value);
-            if (!Number.isNaN(num)) {
-              const newFilters = { ...localFilters, minBedrooms: num };
-              setLocalFilters(newFilters);
-            }
-          }}
-          onMaxChange={(value) => {
-            const num = parseFloat(value);
-            if (!Number.isNaN(num)) {
-              const newFilters = { ...localFilters, maxBedrooms: num };
-              setLocalFilters(newFilters);
-            }
-          }}
+          minValue={localFilters.minBedrooms ?? undefined}
+          maxValue={localFilters.maxBedrooms ?? undefined}
+          onRangeChange={
+            createRangeHandlers("minBedrooms", "maxBedrooms").onChange
+          }
+          onMinChange={
+            createRangeHandlers("minBedrooms", "maxBedrooms").onMinChange
+          }
+          onMaxChange={
+            createRangeHandlers("minBedrooms", "maxBedrooms").onMaxChange
+          }
           min={filterOptions.minBedrooms}
           max={filterOptions.maxBedrooms}
           step={1}
@@ -348,46 +195,37 @@ export function FiltersSidebar({
         />
 
         {/* Property Type Filter */}
-        <div>
-          <Label className="text-base font-medium mb-3 block">Property Type</Label>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {filterOptions.propertyTypes.map((type) => (
-              <div key={type} className="flex items-center space-x-2 p-2 rounded hover:bg-muted/30">
-                <Checkbox
-                  id={`property-${type}`}
-                  checked={localFilters.propertyType.includes(type)}
-                  onCheckedChange={(checked) =>
-                    handleMultiSelectChange(
-                      "propertyType",
-                      type,
-                      checked as boolean,
-                    )
-                  }
-                />
-                <Label htmlFor={`property-${type}`} className="text-sm">
-                  {type}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div>
+        <CheckboxList
+          label="Property Type"
+          options={filterOptions.propertyTypes}
+          selected={localFilters.propertyTypes}
+          onChange={(value, checked) =>
+            handleMultiSelectChange("propertyTypes", value, checked)
+          }
+          gridCols={2}
+        />
 
         {/* Zip Code Filter */}
         <div>
-          <Label className="text-base font-medium mb-2 block">Location (Zip Code)</Label>
+          <Label className="text-base font-medium mb-2 block">
+            Location (Zip Code)
+          </Label>
           <motion.p
-            key={localFilters.zip.length === 0 ? "alpha" : "selected"}
+            key={localFilters.zipCodes?.length === 0 ? "alpha" : "selected"}
             layout
             className="text-xs text-muted-foreground mb-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            {localFilters.zip.length === 0
+            {localFilters.zipCodes?.length === 0
               ? "Sorted alphabetically"
               : "Selected zips first, then by price proximity"}
           </motion.p>
-          <div ref={scrollRef} className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+          <div
+            ref={scrollRef}
+            className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto"
+          >
             {sortedZipCodes.map((zip) => (
               <motion.div
                 key={zip}
@@ -402,9 +240,9 @@ export function FiltersSidebar({
               >
                 <Checkbox
                   id={`zip-${zip}`}
-                  checked={localFilters.zip.includes(zip)}
+                  checked={localFilters.zipCodes.includes(zip)}
                   onCheckedChange={(checked) =>
-                    handleMultiSelectChange("zip", zip, checked as boolean)
+                    handleMultiSelectChange("zipCodes", zip, checked as boolean)
                   }
                 />
                 <Label htmlFor={`zip-${zip}`} className="text-sm flex-1">
@@ -419,79 +257,50 @@ export function FiltersSidebar({
         </div>
 
         {/* Review Score Filter */}
-        <RangeSliderFilter
+        <Slider
           label="Review Score"
-          minValue={localFilters.minReviewScore}
-          maxValue={localFilters.maxReviewScore}
-          onChange={(min, max) => {
-            const newFilters = {
-              ...localFilters,
-              minReviewScore: min,
-              maxReviewScore: max,
-            };
-            setLocalFilters(newFilters);
-          }}
-          onMinChange={(value) => {
-            const num = parseFloat(value);
-            if (!Number.isNaN(num)) {
-              const newFilters = { ...localFilters, minReviewScore: num };
-              setLocalFilters(newFilters);
-            }
-          }}
-          onMaxChange={(value) => {
-            const num = parseFloat(value);
-            if (!Number.isNaN(num)) {
-              const newFilters = { ...localFilters, maxReviewScore: num };
-              setLocalFilters(newFilters);
-            }
-          }}
+          minValue={localFilters.minReviewScore ?? undefined}
+          maxValue={localFilters.maxReviewScore ?? undefined}
+          onRangeChange={
+            createRangeHandlers("minReviewScore", "maxReviewScore").onChange
+          }
+          onMinChange={
+            createRangeHandlers("minReviewScore", "maxReviewScore").onMinChange
+          }
+          onMaxChange={
+            createRangeHandlers("minReviewScore", "maxReviewScore").onMaxChange
+          }
           min={filterOptions.minReviewScore}
           max={filterOptions.maxReviewScore}
           step={0.1}
-          formatValue={(v) => v.toFixed(1)}
+          formatValue={(v: number) => v.toFixed(1)}
           volumes={filterOptions.reviewScoreVolumes}
         />
 
         {/* Host Filters */}
-        <div className="space-y-3">
-          <Label className="text-base font-medium">Host Preferences</Label>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3 p-2 rounded hover:bg-muted/30">
-              <Checkbox
-                id="hostSuperhost"
-                checked={localFilters.hostIsSuperhost}
-                onCheckedChange={(checked) => {
-                  const newFilters = {
-                    ...localFilters,
-                    hostIsSuperhost: checked as boolean,
-                  };
-                  setLocalFilters(newFilters);
-                }}
-              />
-              <Label htmlFor="hostSuperhost" className="text-sm">
-                Superhost only
-              </Label>
-            </div>
-            <div className="flex items-center space-x-3 p-2 rounded hover:bg-muted/30">
-              <Checkbox
-                id="instantBookable"
-                checked={localFilters.instantBookable}
-                onCheckedChange={(checked) => {
-                  const newFilters = {
-                    ...localFilters,
-                    instantBookable: checked as boolean,
-                  };
-                  setLocalFilters(newFilters);
-                }}
-              />
-              <Label htmlFor="instantBookable" className="text-sm">
-                Instant bookable
-              </Label>
-            </div>
-          </div>
-        </div>
-
+        <ButtonGrid
+          label="Host Preferences"
+          options={[
+            {
+              value: "hostIsSuperhost",
+              label: "Superhost only",
+              icon: <Shield className="w-4 h-4" />,
+            },
+            {
+              value: "instantBookable",
+              label: "Instant bookable",
+              icon: <Zap className="w-4 h-4" />,
+            },
+          ]}
+          selected={{
+            hostIsSuperhost: localFilters.hostIsSuperhost,
+            instantBookable: localFilters.instantBookable,
+          }}
+          onChange={(value, checked) =>
+            handleBooleanChange(value as keyof Filters, checked)
+          }
+        />
       </div>
     </div>
   );
-}
+});
