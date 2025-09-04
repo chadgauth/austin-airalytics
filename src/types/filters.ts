@@ -17,7 +17,7 @@ export interface Filters {
 export interface FilterOptions {
   zipCodes: string[];
   roomTypes: string[];
-  propertyTypes: string[];
+  propertyTypes: { value: string; count: number }[];
   minPrice: number;
   maxPrice: number;
   minAccommodates: number;

@@ -159,9 +159,17 @@ export const listingsRouter = router({
         ...new Set(listings.map((l) => l.room_type).filter(Boolean)),
       ].sort();
 
-      const propertyTypes = [
-        ...new Set(listings.map((l) => l.property_type).filter(Boolean)),
-      ].sort();
+      const propertyTypes = Object.entries(
+        listings
+          .map((l) => l.property_type)
+          .filter(Boolean)
+          .reduce((acc, type) => {
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>)
+      )
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => b.count - a.count);
 
       // Price range
       const prices = listings

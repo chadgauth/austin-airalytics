@@ -3,12 +3,12 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 interface CheckboxListProps {
-  options: string[];
+  options: string[] | { value: string; count: number }[];
   selected: string[];
   onChange: (value: string, checked: boolean) => void;
   label?: string;
   maxHeight?: string;
-  renderOption?: (option: string) => React.ReactNode;
+  renderOption?: (option: string | { value: string; count: number }) => React.ReactNode;
   gridCols?: number;
   containerClassName?: string;
 }
@@ -32,11 +32,12 @@ export function CheckboxList({
       {label && <div className="text-base font-medium mb-3 block">{label}</div>}
       <div className={containerClasses}>
         {options.map((option) => {
-          const isSelected = selected.includes(option);
+          const value = typeof option === 'string' ? option : option.value;
+          const isSelected = selected.includes(value);
 
           return (
             <div
-              key={option}
+              key={value}
               className={cn(
                 "flex items-center space-x-2 p-2 rounded transition-all duration-200",
                 isSelected
@@ -46,13 +47,15 @@ export function CheckboxList({
               )}
             >
               <Checkbox
-                id={`checkbox-${option}`}
+                id={`checkbox-${value}`}
                 checked={isSelected}
-                onCheckedChange={(checked) => onChange(option, checked as boolean)}
+                onCheckedChange={(checked) => onChange(value, checked as boolean)}
                 className="data-[state=checked]:bg-primary-600 data-[state=checked]:border-primary-600"
               />
-              <Label htmlFor={`checkbox-${option}`} className="text-sm flex-1 cursor-pointer">
-                {renderOption ? renderOption(option) : option}
+              <Label htmlFor={`checkbox-${value}`} className="text-sm flex-1 cursor-pointer">
+                {renderOption ? renderOption(option) : (
+                  typeof option === 'string' ? option : `${option.value} (${option.count})`
+                )}
               </Label>
             </div>
           );
