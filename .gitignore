@@ -19,6 +19,7 @@
 
 # production
 /build
+/analytics/target
 
 # misc
 .DS_Store

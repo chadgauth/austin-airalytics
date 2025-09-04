@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import MetricsOverview from "@/components/metrics-overview";
 import { Button } from "@/components/ui/button";
 
 // import { ProfitCalculator } from "@/components/profit-calculator";
@@ -207,6 +208,31 @@ export default function DashboardLayout({
                 TypeScript and cutting-edge web APIs.
               </p>
             </motion.div>
+          </motion.div>
+
+          {/* Metrics Overview Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.4 }}
+            className="mb-8"
+          >
+            <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 p-6 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-semibold text-gradient-primary">
+                    Market Analytics Overview
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Real-time insights from Python analytics engine
+                  </p>
+                </div>
+              </div>
+              <MetricsOverview />
+            </div>
           </motion.div>
 
           {/* Quick Actions Bar */}

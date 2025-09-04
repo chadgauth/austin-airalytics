@@ -9,7 +9,6 @@ import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { useFilters } from "@/lib/use-filters";
 import type { FilterOptions, Filters } from "@/types/filters";
 
 interface FiltersSidebarProps {
@@ -17,23 +16,33 @@ interface FiltersSidebarProps {
   onFiltersChange: (filters: Filters) => void;
   onFilterOptionsChange: (options: FilterOptions) => void;
   onClearFilters: () => void;
+  initialFilters: Filters;
+  handleMultiSelectChange: (
+    key: "zipCodes" | "roomTypes" | "propertyTypes",
+    value: string,
+    checked: boolean,
+  ) => void;
+  handleBooleanChange: (key: keyof Filters, checked: boolean) => void;
+  createRangeHandlers: (minKey: keyof Filters, maxKey: keyof Filters) => {
+    onChange: (min: number, max: number) => void;
+    onMinChange: (value: string) => void;
+    onMaxChange: (value: string) => void;
+  };
 }
 
 export const FiltersSidebar = memo(function FiltersSidebar({
   filterOptions,
   onFiltersChange,
   onFilterOptionsChange,
+  onClearFilters,
+  initialFilters,
+  handleMultiSelectChange,
+  handleBooleanChange,
+  createRangeHandlers,
 }: FiltersSidebarProps) {
   const [sortedZipCodes, setSortedZipCodes] = useState<string[]>([]);
   const [highlightedZips, setHighlightedZips] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const {
-    localFilters,
-    handleMultiSelectChange,
-    handleBooleanChange,
-    createRangeHandlers,
-  } = useFilters(onFiltersChange, onFilterOptionsChange);
 
   // Initialize sorted zip codes when filterOptions change
   useEffect(() => {
@@ -43,8 +52,8 @@ export const FiltersSidebar = memo(function FiltersSidebar({
   }, [filterOptions]);
 
   useEffect(() => {
-    if (!filterOptions || !localFilters) return;
-    const selected = localFilters.zipCodes;
+    if (!filterOptions || !initialFilters) return;
+    const selected = initialFilters.zipCodes;
     if (selected.length === 0) {
       setSortedZipCodes(filterOptions.zipCodes);
       setHighlightedZips([]);
@@ -74,7 +83,7 @@ export const FiltersSidebar = memo(function FiltersSidebar({
     setTimeout(() => {
       scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     }, 0);
-  }, [localFilters, filterOptions]);
+  }, [initialFilters, filterOptions]);
 
   const getRoomTypeIcon = (roomType: string) => {
     switch (roomType) {
@@ -91,7 +100,7 @@ export const FiltersSidebar = memo(function FiltersSidebar({
     }
   };
 
-  if (!filterOptions || !localFilters) {
+  if (!filterOptions || !initialFilters) {
     return (
       <LoadingSkeleton
         sections={[
@@ -121,8 +130,8 @@ export const FiltersSidebar = memo(function FiltersSidebar({
         {filterOptions && (
           <Slider
             label="Price Range"
-            minValue={localFilters?.minPrice ?? undefined}
-            maxValue={localFilters?.maxPrice ?? undefined}
+            minValue={initialFilters?.minPrice ?? undefined}
+            maxValue={initialFilters?.maxPrice ?? undefined}
             onRangeChange={createRangeHandlers("minPrice", "maxPrice").onChange}
             onMinChange={
               createRangeHandlers("minPrice", "maxPrice").onMinChange
@@ -146,7 +155,7 @@ export const FiltersSidebar = memo(function FiltersSidebar({
             label: type,
             icon: getRoomTypeIcon(type),
           }))}
-          selected={localFilters.roomTypes}
+          selected={initialFilters.roomTypes}
           onChange={(value, checked) =>
             handleMultiSelectChange("roomTypes", value, checked)
           }
@@ -155,8 +164,8 @@ export const FiltersSidebar = memo(function FiltersSidebar({
         {/* Accommodates Filter */}
         <Slider
           label="Accommodates"
-          minValue={localFilters.minAccommodates ?? undefined}
-          maxValue={localFilters.maxAccommodates ?? undefined}
+          minValue={initialFilters.minAccommodates ?? undefined}
+          maxValue={initialFilters.maxAccommodates ?? undefined}
           onRangeChange={
             createRangeHandlers("minAccommodates", "maxAccommodates").onChange
           }
@@ -177,8 +186,8 @@ export const FiltersSidebar = memo(function FiltersSidebar({
         {/* Bedrooms Filter */}
         <Slider
           label="Bedrooms"
-          minValue={localFilters.minBedrooms ?? undefined}
-          maxValue={localFilters.maxBedrooms ?? undefined}
+          minValue={initialFilters.minBedrooms ?? undefined}
+          maxValue={initialFilters.maxBedrooms ?? undefined}
           onRangeChange={
             createRangeHandlers("minBedrooms", "maxBedrooms").onChange
           }
@@ -198,7 +207,7 @@ export const FiltersSidebar = memo(function FiltersSidebar({
         <CheckboxList
           label="Property Type"
           options={filterOptions.propertyTypes}
-          selected={localFilters.propertyTypes}
+          selected={initialFilters.propertyTypes}
           onChange={(value, checked) =>
             handleMultiSelectChange("propertyTypes", value, checked)
           }
@@ -211,14 +220,14 @@ export const FiltersSidebar = memo(function FiltersSidebar({
             Location (Zip Code)
           </Label>
           <motion.p
-            key={localFilters.zipCodes?.length === 0 ? "alpha" : "selected"}
+            key={initialFilters.zipCodes?.length === 0 ? "alpha" : "selected"}
             layout
             className="text-xs text-muted-foreground mb-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            {localFilters.zipCodes?.length === 0
+            {initialFilters.zipCodes?.length === 0
               ? "Sorted alphabetically"
               : "Selected zips first, then by price proximity"}
           </motion.p>
@@ -240,7 +249,7 @@ export const FiltersSidebar = memo(function FiltersSidebar({
               >
                 <Checkbox
                   id={`zip-${zip}`}
-                  checked={localFilters.zipCodes.includes(zip)}
+                  checked={initialFilters.zipCodes.includes(zip)}
                   onCheckedChange={(checked) =>
                     handleMultiSelectChange("zipCodes", zip, checked as boolean)
                   }
@@ -259,8 +268,8 @@ export const FiltersSidebar = memo(function FiltersSidebar({
         {/* Review Score Filter */}
         <Slider
           label="Review Score"
-          minValue={localFilters.minReviewScore ?? undefined}
-          maxValue={localFilters.maxReviewScore ?? undefined}
+          minValue={initialFilters.minReviewScore ?? undefined}
+          maxValue={initialFilters.maxReviewScore ?? undefined}
           onRangeChange={
             createRangeHandlers("minReviewScore", "maxReviewScore").onChange
           }
@@ -293,8 +302,8 @@ export const FiltersSidebar = memo(function FiltersSidebar({
             },
           ]}
           selected={{
-            hostIsSuperhost: localFilters.hostIsSuperhost,
-            instantBookable: localFilters.instantBookable,
+            hostIsSuperhost: initialFilters.hostIsSuperhost,
+            instantBookable: initialFilters.instantBookable,
           }}
           onChange={(value, checked) =>
             handleBooleanChange(value as keyof Filters, checked)

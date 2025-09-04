@@ -3,24 +3,16 @@ import { trpc } from "./trpc/client";
 import type { FilterOptions, Filters } from "@/types/filters";
 
 export function useFilters(
+  initialFilters: Filters,
   onFiltersChange: (filters: Filters) => void,
   onFilterOptionsChange: (options: FilterOptions) => void,
 ) {
-  const [localFilters, setLocalFilters] = useState<Filters | null>({
-    zipCodes: [],
-    roomTypes: [],
-    propertyTypes: [],
-    minPrice: 0,
-    maxPrice: Infinity,
-    minAccommodates: 0,
-    maxAccommodates: Infinity,
-    minBedrooms: 0,
-    maxBedrooms: Infinity,
-    minReviewScore: 0,
-    maxReviewScore: Infinity,
-    hostIsSuperhost: false,
-    instantBookable: false,
-  });
+  const [localFilters, setLocalFilters] = useState<Filters>(initialFilters);
+
+  // Update local filters when initialFilters change (e.g., from localStorage)
+  useEffect(() => {
+    setLocalFilters(initialFilters);
+  }, [initialFilters]);
 
   // Debounce filters
   useEffect(() => {
@@ -31,6 +23,7 @@ export function useFilters(
     return () => clearTimeout(timeout);
   }, [localFilters, onFiltersChange]);
 
+
   const { data: filterOptionsData } = trpc.listings.getFilterOptions.useQuery({});
 
   useEffect(() => {
@@ -39,17 +32,25 @@ export function useFilters(
       // Update localFilters with actual values from filter options only if they are still defaults
       setLocalFilters((prev) => {
         if (!prev) return prev;
-        return {
-          ...prev,
-          minPrice: prev.minPrice === 0 ? filterOptionsData.minPrice : prev.minPrice,
-          maxPrice: prev.maxPrice === Infinity ? filterOptionsData.maxPrice : prev.maxPrice,
-          minAccommodates: prev.minAccommodates === 0 ? filterOptionsData.minAccommodates : prev.minAccommodates,
-          maxAccommodates: prev.maxAccommodates === Infinity ? filterOptionsData.maxAccommodates : prev.maxAccommodates,
-          minBedrooms: prev.minBedrooms === 0 ? filterOptionsData.minBedrooms : prev.minBedrooms,
-          maxBedrooms: prev.maxBedrooms === Infinity ? filterOptionsData.maxBedrooms : prev.maxBedrooms,
-          minReviewScore: prev.minReviewScore === 0 ? filterOptionsData.minReviewScore : prev.minReviewScore,
-          maxReviewScore: prev.maxReviewScore === Infinity ? filterOptionsData.maxReviewScore : prev.maxReviewScore,
-        };
+        const isUsingDefaults = prev.minPrice === 0 && prev.maxPrice === Infinity &&
+          prev.minAccommodates === 0 && prev.maxAccommodates === Infinity &&
+          prev.minBedrooms === 0 && prev.maxBedrooms === Infinity &&
+          prev.minReviewScore === 0 && prev.maxReviewScore === Infinity;
+
+        if (isUsingDefaults) {
+          return {
+            ...prev,
+            minPrice: filterOptionsData.minPrice,
+            maxPrice: filterOptionsData.maxPrice,
+            minAccommodates: filterOptionsData.minAccommodates,
+            maxAccommodates: filterOptionsData.maxAccommodates,
+            minBedrooms: filterOptionsData.minBedrooms,
+            maxBedrooms: filterOptionsData.maxBedrooms,
+            minReviewScore: filterOptionsData.minReviewScore,
+            maxReviewScore: filterOptionsData.maxReviewScore,
+          };
+        }
+        return prev;
       });
     }
   }, [filterOptionsData, onFilterOptionsChange]);
