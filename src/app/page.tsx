@@ -71,14 +71,6 @@ export default function Dashboard() {
     loadFiltersFromStorage(),
   );
 
-  // Debounce filters
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      // This would trigger any filter-dependent operations
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [filters]);
-
   const { data: filterOptionsData } = trpc.listings.getFilterOptions.useQuery({});
 
   useEffect(() => {
