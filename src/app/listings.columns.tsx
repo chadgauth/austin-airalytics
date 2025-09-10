@@ -109,7 +109,11 @@ export const columns: ColumnDef<Listing>[] = [
       };
 
       return (
-        <Badge variant={getBadgeVariant(roomType)} className="font-medium">
+        <Badge
+          variant={getBadgeVariant(roomType)}
+          className="font-medium text-[10px] whitespace-nowrap"
+          title={roomType}
+        >
           {roomType}
         </Badge>
       );
