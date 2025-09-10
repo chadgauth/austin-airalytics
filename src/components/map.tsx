@@ -13,6 +13,7 @@ interface MapListing {
   neighbourhood_cleansed: string;
   price: string;
   room_type: string;
+  picture_url: string;
 }
 
 // Fix for default markers in react-leaflet
@@ -76,15 +77,29 @@ function MarkersWithClustering({ listings, isLoading }: { listings: MapListing[]
         if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
           const marker = L.marker([lat, lng]);
           marker.bindPopup(`
-            <div class="p-3 max-w-xs">
-              <h3 class="font-bold text-base text-gray-900 mb-1 truncate">${listing.name}</h3>
-              <p class="text-sm text-gray-600 mb-2">${listing.neighbourhood_cleansed}</p>
-              <div class="flex justify-between items-center">
-                <span class="text-lg font-semibold text-green-600">${listing.price}/night</span>
-                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${listing.room_type}</span>
+            <div class="p-0 max-w-xs bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
+              <div class="relative">
+                <img
+                  src="${listing.picture_url}"
+                  alt="${listing.name}"
+                  class="w-full h-40 object-cover"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div class="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+                  <span class="text-sm font-bold text-gray-900">${listing.price}/night</span>
+                </div>
+              </div>
+              <div class="p-4">
+                <h3 class="font-semibold text-gray-900 mb-1 text-sm leading-tight line-clamp-2">${listing.name}</h3>
+                <p class="text-xs text-gray-600 mb-3">${listing.neighbourhood_cleansed}</p>
+                <div class="flex items-center justify-between">
+                  <span class="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium border border-blue-200">${listing.room_type}</span>
+                  <span class="text-xs text-blue-600 font-medium hover:text-blue-800 cursor-pointer">View details →</span>
+                </div>
               </div>
             </div>
-          `);
+          `, { closeButton: false, className: 'custom-popup' });
 
           // Dim marker when loading
           if (isLoading) {

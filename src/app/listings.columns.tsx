@@ -4,12 +4,14 @@ import type { Column, ColumnDef } from "@tanstack/react-table";
 import {
   ArrowDown,
   ArrowUp,
-  MoreHorizontal,
+  ImageIcon,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { useState } from "react";
 import type { Listing } from "../types/listings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { cn, decodeHtmlEntities, formatCurrency } from "@/lib/utils";
 
 
@@ -55,38 +57,51 @@ const SortableHeaderButton = ({
 
 export const columns: ColumnDef<Listing>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "name",
     header: ({ column }) => (
       <SortableHeaderButton column={column} label="Host Name / Name" />
     ),
-    cell: ({ row }) => (
-      <div className="flex flex-col">
-        <div>{decodeHtmlEntities(row.original.host_name)}</div>
-        <div className="text-[11px] text-gray-700">{row.original.name}</div>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const [imageError, setImageError] = useState(false);
+      const [imageLoaded, setImageLoaded] = useState(false);
+
+      return (
+        <div className="flex items-center gap-3">
+          {imageError ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"
+            >
+              <ImageIcon className="w-6 h-6 text-gray-400" />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: imageLoaded ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-12 h-12"
+            >
+              <Image
+                src={row.original.picture_url}
+                alt={row.original.name}
+                width={48}
+                height={48}
+                className="rounded-md object-cover w-full h-full"
+                loading="lazy"
+                onError={() => setImageError(true)}
+                onLoad={() => setImageLoaded(true)}
+              />
+            </motion.div>
+          )}
+          <div className="flex flex-col">
+            <div>{decodeHtmlEntities(row.original.host_name)}</div>
+            <div className="text-[11px] text-gray-700">{row.original.name}</div>
+          </div>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "room_type",
@@ -167,17 +182,6 @@ export const columns: ColumnDef<Listing>[] = [
       const formatted = Number.isNaN(risk) ? "N/A" : risk.toFixed(2);
 
       return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    id: "actions",
-    cell: () => {
-      return (
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      );
     },
   },
 ];

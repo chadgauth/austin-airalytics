@@ -59,6 +59,7 @@ export const getMapData = publicProcedure
         neighbourhood_cleansed: listingsTable.neighbourhood_cleansed,
         price: listingsTable.price,
         room_type: listingsTable.room_type,
+        picture_url: listingsTable.picture_url,
         accommodates: listingsTable.accommodates,
         bedrooms: listingsTable.bedrooms,
         review_scores_rating: listingsTable.review_scores_rating,
@@ -75,6 +76,7 @@ export const getMapData = publicProcedure
       neighbourhood_cleansed: row.neighbourhood_cleansed || '',
       price: row.price || '',
       room_type: row.room_type || '',
+      picture_url: row.picture_url || '',
       accommodates: row.accommodates || 0,
       bedrooms: row.bedrooms || 0,
       review_scores_rating: row.review_scores_rating ? parseFloat(String(row.review_scores_rating)) : 0,
@@ -101,5 +103,6 @@ export const getMapData = publicProcedure
       neighbourhood_cleansed: listing.neighbourhood_cleansed,
       price: listing.price,
       room_type: listing.room_type,
+      picture_url: listing.picture_url,
     }));
   });

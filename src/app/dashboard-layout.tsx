@@ -116,16 +116,6 @@ export default function DashboardLayout({
             </Button>
           </div>
         </div>
-
-        {/* Mobile Quick Stats */}
-        <div className="grid grid-cols-2 gap-3 mt-4">
-          <div className="text-center p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-neutral-200/50">
-            <div className="text-lg font-bold text-accent-600 font-mono">
-              Live
-            </div>
-            <div className="text-xs text-muted-foreground">Real-time Data</div>
-          </div>
-        </div>
       </div>
 
       {/* Desktop Layout */}
@@ -206,48 +196,6 @@ export default function DashboardLayout({
                 real-time data streaming and interactive geospatial visualizations.
               </p>
             </motion.div>
-          </motion.div>
-
-          {/* Quick Actions Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.3 }}
-            className="mb-8 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-4">
-              <h2 className="text-2xl font-semibold">Market Analysis Tools</h2>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                Live Data
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setMobileView("map")}
-                className={
-                  mobileView === "map" ? "bg-primary-50 border-primary-300" : ""
-                }
-              >
-                <MapIcon className="w-4 h-4 mr-2" />
-                Map View
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setMobileView("list")}
-                className={
-                  mobileView === "list"
-                    ? "bg-primary-50 border-primary-300"
-                    : ""
-                }
-              >
-                <List className="w-4 h-4 mr-2" />
-                Data Table
-              </Button>
-            </div>
           </motion.div>
 
           <div className="flex gap-8">
