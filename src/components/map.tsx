@@ -7,8 +7,8 @@ import { trpc } from "@/lib/trpc/client";
 import type { Filters } from "@/types/filters";
 
 interface MapListing {
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   name: string;
   neighbourhood_cleansed: string;
   price: string;
@@ -70,8 +70,8 @@ function MarkersWithClustering({ listings, isLoading }: { listings: MapListing[]
     // Add markers to cluster group
     for (const listing of listings) {
       if (listing.latitude && listing.longitude) {
-        const lat = parseFloat(listing.latitude);
-        const lng = parseFloat(listing.longitude);
+        const lat = listing.latitude;
+        const lng = listing.longitude;
 
         if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
           const marker = L.marker([lat, lng]);
@@ -175,8 +175,8 @@ export default function ListingsMap({
     (listing: MapListing) =>
       listing.latitude &&
       listing.longitude &&
-      !Number.isNaN(parseFloat(listing.latitude)) &&
-      !Number.isNaN(parseFloat(listing.longitude)),
+      !Number.isNaN(listing.latitude) &&
+      !Number.isNaN(listing.longitude),
   );
 
   // Calculate center from listings (only for initial load)
@@ -184,12 +184,12 @@ export default function ListingsMap({
     if (validListings.length === 0) return [30.2672, -97.7431] as [number, number]; // Austin, TX default
 
     const lat = validListings.reduce(
-      (sum: number, listing: MapListing) => sum + parseFloat(listing.latitude),
+      (sum: number, listing: MapListing) => sum + listing.latitude,
       0,
     ) / validListings.length;
 
     const lng = validListings.reduce(
-      (sum: number, listing: MapListing) => sum + parseFloat(listing.longitude),
+      (sum: number, listing: MapListing) => sum + listing.longitude,
       0,
     ) / validListings.length;
 

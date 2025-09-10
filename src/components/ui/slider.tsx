@@ -1,5 +1,5 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -51,7 +51,6 @@ const Slider = React.forwardRef<
     let sliderMax: number;
     let sliderMinProp: number;
     let sliderMaxProp: number;
-    let onValueChangeHandler: (value: number[]) => void;
 
     if (isLogarithmic && minValue !== undefined && maxValue !== undefined) {
       // Logarithmic scaling calculations
@@ -71,36 +70,41 @@ const Slider = React.forwardRef<
 
       sliderMinProp = 0;
       sliderMaxProp = 100;
-
-      // Convert slider positions back to actual values
-      const actualValueFromSlider = (sliderValue: number) => {
-        if (sliderValue === 0) return min;
-        if (sliderValue === 100) return max;
-        return Math.round(10 ** (logMin + logRange * (sliderValue / 100)));
-      };
-
-      onValueChangeHandler = (value: number[]) => {
-        if (!value || !Array.isArray(value) || value.length < 2) return;
-        const [newSliderMin, newSliderMax] = value;
-        const newMin = actualValueFromSlider(newSliderMin);
-        const newMax = actualValueFromSlider(newSliderMax);
-        onRangeChange?.(newMin, newMax);
-      };
     } else {
       // Linear scaling
       sliderMin = minValue ?? min;
       sliderMax = maxValue ?? max;
       sliderMinProp = min;
       sliderMaxProp = max;
-
-      onValueChangeHandler = (value: number[]) => {
-        if (!value || !Array.isArray(value) || value.length < 2) return;
-        const [newMin, newMax] = value;
-        onRangeChange?.(newMin, newMax);
-      };
     }
 
-    const sliderValue = [sliderMin, sliderMax];
+    // Local state for slider value to prevent excessive API calls during drag
+    const [localSliderValue, setLocalSliderValue] = useState([sliderMin, sliderMax]);
+
+    useEffect(() => {
+      setLocalSliderValue([sliderMin, sliderMax]);
+    }, [sliderMin, sliderMax]);
+
+    const onValueCommitHandler = (value: number[]) => {
+      if (!value || !Array.isArray(value) || value.length < 2) return;
+      let newMin, newMax;
+      if (isLogarithmic) {
+        const [newSliderMin, newSliderMax] = value;
+        const logMin = Math.log10(min);
+        const logMax = Math.log10(max);
+        const logRange = logMax - logMin;
+        const actualValueFromSlider = (sliderValue: number) => {
+          if (sliderValue === 0) return min;
+          if (sliderValue === 100) return max;
+          return Math.round(10 ** (logMin + logRange * (sliderValue / 100)));
+        };
+        newMin = actualValueFromSlider(newSliderMin);
+        newMax = actualValueFromSlider(newSliderMax);
+      } else {
+        [newMin, newMax] = value;
+      }
+      onRangeChange?.(newMin, newMax);
+    };
 
     const isRangeFilter =
       label && minValue !== undefined && maxValue !== undefined;
@@ -111,8 +115,9 @@ const Slider = React.forwardRef<
           <div className="text-base font-medium pb-3">{label}</div>
             <SliderPrimitive.Root
               ref={ref}
-              value={sliderValue}
-              onValueChange={onValueChangeHandler}
+              value={localSliderValue}
+              onValueChange={setLocalSliderValue}
+              onValueCommit={onValueCommitHandler}
               min={sliderMinProp}
               max={sliderMaxProp}
               step={isLogarithmic ? 1 : step}

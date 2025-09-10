@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import MetricsOverview from "@/components/metrics-overview";
 import { Button } from "@/components/ui/button";
 
 // import { ProfitCalculator } from "@/components/profit-calculator";
@@ -148,9 +147,9 @@ export default function DashboardLayout({
                 Austin Airbnb Analytics Pro
               </h1>
               <p className="text-muted-foreground text-xl max-w-4xl mx-auto leading-relaxed mb-8">
-                A sophisticated data analysis platform demonstrating advanced
-                web development techniques. Built with modern technologies to
-                process and visualize real estate market data in real-time.
+                A sophisticated data analysis platform built with Next.js,
+                Tailwind CSS, and tRPC. Showcasing modern full-stack development
+                techniques to process and visualize real estate market data in real-time.
               </p>
             </div>
 
@@ -163,7 +162,7 @@ export default function DashboardLayout({
                 className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-neutral-200/50"
               >
                 <div className="text-2xl font-bold text-accent-600 mb-2 font-mono">
-                  React 19
+                  Next.js
                 </div>
                 <div className="text-sm text-muted-foreground">Framework</div>
               </motion.div>
@@ -175,9 +174,9 @@ export default function DashboardLayout({
                 className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-neutral-200/50"
               >
                 <div className="text-2xl font-bold text-primary-600 mb-2 font-mono">
-                  TypeScript
+                  Tailwind CSS
                 </div>
-                <div className="text-sm text-muted-foreground">Type Safety</div>
+                <div className="text-sm text-muted-foreground">Styling</div>
               </motion.div>
 
               <motion.div
@@ -187,9 +186,9 @@ export default function DashboardLayout({
                 className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-neutral-200/50"
               >
                 <div className="text-2xl font-bold text-accent-600 mb-2 font-mono">
-                  60fps
+                  tRPC
                 </div>
-                <div className="text-sm text-muted-foreground">Performance</div>
+                <div className="text-sm text-muted-foreground">API Layer</div>
               </motion.div>
             </div>
 
@@ -201,38 +200,12 @@ export default function DashboardLayout({
               className="text-center"
             >
               <p className="text-muted-foreground max-w-3xl mx-auto">
-                This application showcases enterprise-level development
-                practices including real-time data streaming, advanced state
-                management, interactive geospatial visualizations, and
-                performance-optimized React patterns. All built with modern
-                TypeScript and cutting-edge web APIs.
+                This application showcases modern full-stack development with
+                tRPC for type-safe APIs, Tailwind CSS for responsive styling,
+                and Next.js for server-side rendering and performance. Features
+                real-time data streaming and interactive geospatial visualizations.
               </p>
             </motion.div>
-          </motion.div>
-
-          {/* Metrics Overview Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.4 }}
-            className="mb-8"
-          >
-            <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 p-6 shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-semibold text-gradient-primary">
-                    Market Analytics Overview
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    Real-time insights from Python analytics engine
-                  </p>
-                </div>
-              </div>
-              <MetricsOverview />
-            </div>
           </motion.div>
 
           {/* Quick Actions Bar */}

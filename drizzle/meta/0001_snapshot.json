@@ -1,0 +1,539 @@
+{
+  "id": "20bf9e6e-4e13-4580-b1d3-7eaf57f1d2e4",
+  "prevId": "936d204f-15e7-48fb-9986-066756b74156",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.hosts": {
+      "name": "hosts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "since": {
+          "name": "since",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "about": {
+          "name": "about",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response_time": {
+          "name": "response_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response_rate": {
+          "name": "response_rate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acceptance_rate": {
+          "name": "acceptance_rate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_superhost": {
+          "name": "is_superhost",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thumbnail_url": {
+          "name": "thumbnail_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "picture_url": {
+          "name": "picture_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "neighbourhood": {
+          "name": "neighbourhood",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "listings_count": {
+          "name": "listings_count",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_listings_count": {
+          "name": "total_listings_count",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verifications": {
+          "name": "verifications",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_profile_pic": {
+          "name": "has_profile_pic",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "identity_verified": {
+          "name": "identity_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.listings": {
+      "name": "listings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "host_id": {
+          "name": "host_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "listing_url": {
+          "name": "listing_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scrape_id": {
+          "name": "scrape_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_scraped": {
+          "name": "last_scraped",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "neighborhood_overview": {
+          "name": "neighborhood_overview",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "picture_url": {
+          "name": "picture_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "neighbourhood": {
+          "name": "neighbourhood",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "neighbourhood_cleansed": {
+          "name": "neighbourhood_cleansed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "neighbourhood_group_cleansed": {
+          "name": "neighbourhood_group_cleansed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "numeric(10, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "numeric(11, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "property_type": {
+          "name": "property_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "room_type": {
+          "name": "room_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "accommodates": {
+          "name": "accommodates",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bathrooms": {
+          "name": "bathrooms",
+          "type": "numeric(3, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bathrooms_text": {
+          "name": "bathrooms_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bedrooms": {
+          "name": "bedrooms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "beds": {
+          "name": "beds",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amenities": {
+          "name": "amenities",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price": {
+          "name": "price",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minimum_nights": {
+          "name": "minimum_nights",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maximum_nights": {
+          "name": "maximum_nights",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minimum_minimum_nights": {
+          "name": "minimum_minimum_nights",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maximum_minimum_nights": {
+          "name": "maximum_minimum_nights",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minimum_maximum_nights": {
+          "name": "minimum_maximum_nights",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maximum_maximum_nights": {
+          "name": "maximum_maximum_nights",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minimum_nights_avg_ntm": {
+          "name": "minimum_nights_avg_ntm",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maximum_nights_avg_ntm": {
+          "name": "maximum_nights_avg_ntm",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calendar_updated": {
+          "name": "calendar_updated",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_availability": {
+          "name": "has_availability",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "availability_30": {
+          "name": "availability_30",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "availability_60": {
+          "name": "availability_60",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "availability_90": {
+          "name": "availability_90",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "availability_365": {
+          "name": "availability_365",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calendar_last_scraped": {
+          "name": "calendar_last_scraped",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number_of_reviews": {
+          "name": "number_of_reviews",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number_of_reviews_ltm": {
+          "name": "number_of_reviews_ltm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number_of_reviews_l30d": {
+          "name": "number_of_reviews_l30d",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "availability_eoy": {
+          "name": "availability_eoy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number_of_reviews_ly": {
+          "name": "number_of_reviews_ly",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_occupancy_l365d": {
+          "name": "estimated_occupancy_l365d",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_revenue_l365d": {
+          "name": "estimated_revenue_l365d",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_review": {
+          "name": "first_review",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_review": {
+          "name": "last_review",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_scores_rating": {
+          "name": "review_scores_rating",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_scores_accuracy": {
+          "name": "review_scores_accuracy",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_scores_cleanliness": {
+          "name": "review_scores_cleanliness",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_scores_checkin": {
+          "name": "review_scores_checkin",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_scores_communication": {
+          "name": "review_scores_communication",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_scores_location": {
+          "name": "review_scores_location",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_scores_value": {
+          "name": "review_scores_value",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "license": {
+          "name": "license",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "instant_bookable": {
+          "name": "instant_bookable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calculated_host_listings_count": {
+          "name": "calculated_host_listings_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calculated_host_listings_count_entire_homes": {
+          "name": "calculated_host_listings_count_entire_homes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calculated_host_listings_count_private_rooms": {
+          "name": "calculated_host_listings_count_private_rooms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "calculated_host_listings_count_shared_rooms": {
+          "name": "calculated_host_listings_count_shared_rooms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviews_per_month": {
+          "name": "reviews_per_month",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+         "listings_host_id_hosts_id_fk": {
+          "name": "listings_host_id_hosts_id_fk",
+          "tableFrom": "listings",
+          "tableTo": "hosts",
+          "columnsFrom": [
+            "host_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
