@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { BarChart3, List, MapIcon } from "lucide-react";
+import { motion } from "motion/react";
 import type React from "react";
 
 interface DesktopLayoutProps {
@@ -32,7 +32,8 @@ export function DesktopLayout({ sidebar, map, table }: DesktopLayoutProps) {
             <p className="text-muted-foreground text-xl max-w-4xl mx-auto leading-relaxed mb-8">
               A sophisticated data analysis platform built with Next.js,
               Tailwind CSS, and tRPC. Showcasing modern full-stack development
-              techniques to process and visualize real estate market data in real-time.
+              techniques to process and visualize real estate market data in
+              real-time.
             </p>
           </div>
 
@@ -83,10 +84,11 @@ export function DesktopLayout({ sidebar, map, table }: DesktopLayoutProps) {
             className="text-center"
           >
             <p className="text-muted-foreground max-w-3xl mx-auto">
-              This application showcases modern full-stack development with
-              tRPC for type-safe APIs, Tailwind CSS for responsive styling,
-              and Next.js for server-side rendering and performance. Features
-              real-time data streaming and interactive geospatial visualizations.
+              This application showcases modern full-stack development with tRPC
+              for type-safe APIs, Tailwind CSS for responsive styling, and
+              Next.js for server-side rendering and performance. Features
+              real-time data streaming and interactive geospatial
+              visualizations.
             </p>
           </motion.div>
         </motion.div>

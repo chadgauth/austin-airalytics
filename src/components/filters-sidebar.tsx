@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Building, Home, Shield, User, Users, Zap } from "lucide-react";
+import { motion } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
 import { ButtonGrid } from "@/components/button-grid";
 import { CheckboxList } from "@/components/checkbox-list";
@@ -23,7 +23,10 @@ interface FiltersSidebarProps {
     checked: boolean,
   ) => void;
   handleBooleanChange: (key: keyof Filters, checked: boolean) => void;
-  createRangeHandlers: (minKey: keyof Filters, maxKey: keyof Filters) => {
+  createRangeHandlers: (
+    minKey: keyof Filters,
+    maxKey: keyof Filters,
+  ) => {
     onChange: (min: number, max: number) => void;
     onMinChange: (value: string) => void;
     onMaxChange: (value: string) => void;
@@ -32,9 +35,6 @@ interface FiltersSidebarProps {
 
 export const FiltersSidebar = memo(function FiltersSidebar({
   filterOptions,
-  onFiltersChange,
-  onFilterOptionsChange,
-  onClearFilters,
   initialFilters,
   handleMultiSelectChange,
   handleBooleanChange,

@@ -90,7 +90,7 @@ export const listingSelect = {
   host_identity_verified: hosts.identity_verified,
 };
 
-export function rowToListing(row: any): Listing {
+function rowToListing(row: any): Listing {
   return {
     id: String(row.id),
     listing_url: row.listing_url || "",

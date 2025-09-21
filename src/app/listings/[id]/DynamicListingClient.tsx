@@ -1,7 +1,7 @@
 "use client";
 
 import ListingDetail from "@/components/ListingDetail";
-import { trpc } from "@/lib/trpc/client";
+import { trpc } from "@/utils/trpc";
 
 export default function DynamicListingClient({ id }: { id: string }) {
   const { data, isLoading, error } = trpc.listings.getListing.useQuery({ id });

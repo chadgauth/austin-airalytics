@@ -3,8 +3,8 @@ import { Icon } from "leaflet";
 import { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet.markercluster";
-import { trpc } from "@/lib/trpc/client";
 import type { Filters } from "@/types/filters";
+import { trpc } from "@/utils/trpc";
 
 interface MapListing {
   id: string;
@@ -37,7 +37,13 @@ interface ListingsMapProps {
 }
 
 // Component to handle markers with clustering
-function MarkersWithClustering({ listings, isLoading }: { listings: MapListing[]; isLoading: boolean }) {
+function MarkersWithClustering({
+  listings,
+  isLoading,
+}: {
+  listings: MapListing[];
+  isLoading: boolean;
+}) {
   const map = useMap();
 
   useEffect(() => {
@@ -77,7 +83,8 @@ function MarkersWithClustering({ listings, isLoading }: { listings: MapListing[]
 
         if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
           const marker = L.marker([lat, lng]);
-          marker.bindPopup(`
+          marker.bindPopup(
+            `
             <div class="p-0 max-w-xs bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
               <div class="relative">
                 <img
@@ -100,7 +107,9 @@ function MarkersWithClustering({ listings, isLoading }: { listings: MapListing[]
                 </div>
               </div>
             </div>
-          `, { closeButton: false, className: 'custom-popup' });
+          `,
+            { closeButton: false, className: "custom-popup" },
+          );
 
           // Dim marker when loading
           if (isLoading) {
@@ -145,7 +154,6 @@ function MapEventHandler({
   return null;
 }
 
-
 export default function ListingsMap({
   className,
   filters,
@@ -157,27 +165,33 @@ export default function ListingsMap({
   const [userCenter, setUserCenter] = useState<[number, number] | null>(null);
   const [userZoom, setUserZoom] = useState<number>(12);
 
-  const { data: mapData, isLoading, error: trpcError } = trpc.listings.getMapData.useQuery(
-    filters ? {
-      filters: {
-        zipCodes: filters.zipCodes,
-        roomTypes: filters.roomTypes,
-        propertyTypes: filters.propertyTypes,
-        minPrice: filters.minPrice ?? undefined,
-        maxPrice: filters.maxPrice ?? undefined,
-        minAccommodates: filters.minAccommodates ?? undefined,
-        maxAccommodates: filters.maxAccommodates ?? undefined,
-        minBedrooms: filters.minBedrooms ?? undefined,
-        maxBedrooms: filters.maxBedrooms ?? undefined,
-        minReviewScore: filters.minReviewScore ?? undefined,
-        maxReviewScore: filters.maxReviewScore ?? undefined,
-        hostIsSuperhost: filters.hostIsSuperhost,
-        instantBookable: filters.instantBookable,
-      },
-    } : { filters: undefined },
+  const {
+    data: mapData,
+    isLoading,
+    error: trpcError,
+  } = trpc.listings.getMapData.useQuery(
+    filters
+      ? {
+          filters: {
+            zipCodes: filters.zipCodes,
+            roomTypes: filters.roomTypes,
+            propertyTypes: filters.propertyTypes,
+            minPrice: filters.minPrice ?? undefined,
+            maxPrice: filters.maxPrice ?? undefined,
+            minAccommodates: filters.minAccommodates ?? undefined,
+            maxAccommodates: filters.maxAccommodates ?? undefined,
+            minBedrooms: filters.minBedrooms ?? undefined,
+            maxBedrooms: filters.maxBedrooms ?? undefined,
+            minReviewScore: filters.minReviewScore ?? undefined,
+            maxReviewScore: filters.maxReviewScore ?? undefined,
+            hostIsSuperhost: filters.hostIsSuperhost,
+            instantBookable: filters.instantBookable,
+          },
+        }
+      : { filters: undefined },
     {
       enabled: !isMobile || mobileView === "map",
-    }
+    },
   );
 
   useEffect(() => {
@@ -197,17 +211,20 @@ export default function ListingsMap({
 
   // Calculate center from listings (only for initial load)
   const calculatedCenter = useMemo(() => {
-    if (validListings.length === 0) return [30.2672, -97.7431] as [number, number]; // Austin, TX default
+    if (validListings.length === 0)
+      return [30.2672, -97.7431] as [number, number]; // Austin, TX default
 
-    const lat = validListings.reduce(
-      (sum: number, listing: MapListing) => sum + listing.latitude,
-      0,
-    ) / validListings.length;
+    const lat =
+      validListings.reduce(
+        (sum: number, listing: MapListing) => sum + listing.latitude,
+        0,
+      ) / validListings.length;
 
-    const lng = validListings.reduce(
-      (sum: number, listing: MapListing) => sum + listing.longitude,
-      0,
-    ) / validListings.length;
+    const lng =
+      validListings.reduce(
+        (sum: number, listing: MapListing) => sum + listing.longitude,
+        0,
+      ) / validListings.length;
 
     return [lat, lng] as [number, number];
   }, [validListings]);
@@ -220,7 +237,8 @@ export default function ListingsMap({
   }, [mapCenter, validListings.length, isLoading, calculatedCenter]);
 
   // Use user center if available, otherwise stored center, otherwise default
-  const displayCenter = userCenter || mapCenter || [30.2672, -97.7431] as [number, number];
+  const displayCenter =
+    userCenter || mapCenter || ([30.2672, -97.7431] as [number, number]);
   const displayZoom = userZoom;
 
   // Handle error state

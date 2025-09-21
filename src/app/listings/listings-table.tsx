@@ -10,8 +10,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { motion } from "framer-motion";
 import { Filter, Search } from "lucide-react";
+import { motion } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,10 +29,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { trpc } from "@/lib/trpc/client";
 import type { FilterOptions, Filters } from "@/types/filters";
 import type { Listing } from "@/types/listings";
 import { useDebounce } from "@/utils/client-utils";
+import { trpc } from "@/utils/trpc";
 
 const COLUMN_LABELS: Record<string, string> = {
   name: "Host Name / Name",
@@ -107,7 +107,6 @@ export function DataTable({ columns, filters }: DataTableProps) {
     }
     setLoading(isLoading);
   }, [listingsData, isLoading]);
-
 
   const table = useReactTable({
     data,

@@ -118,7 +118,7 @@ export function filterListings(
  * @param values Array of numbers (should be filtered for valid values)
  * @returns Object with lower and upper bounds
  */
-export function calculateIQRBounds(values: number[]): {
+function calculateIQRBounds(values: number[]): {
   lower: number;
   upper: number;
 } {
@@ -144,7 +144,7 @@ export function calculateIQRBounds(values: number[]): {
  * @param bounds The IQR bounds
  * @returns True if outlier
  */
-export function isOutlier(
+function isOutlier(
   value: number,
   bounds: { lower: number; upper: number },
 ): boolean {
@@ -361,69 +361,4 @@ export function calculateVolumes(
   });
 
   return volumes;
-}
-
-/**
- * Parses search parameters into Filters object.
- */
-export function parseFilters(searchParams: URLSearchParams): Filters {
-  const zipParam = searchParams.get("zip");
-  const zipCodes = zipParam ? zipParam.split(",") : [];
-
-  const roomTypeParam = searchParams.get("roomType");
-  const roomTypes = roomTypeParam ? roomTypeParam.split(",") : [];
-
-  const propertyTypeParam = searchParams.get("propertyType");
-  const propertyTypes = propertyTypeParam ? propertyTypeParam.split(",") : [];
-
-  const minPriceParam = searchParams.get("minPrice");
-  const minPrice = minPriceParam ? parseFloat(minPriceParam) : null;
-
-  const maxPriceParam = searchParams.get("maxPrice");
-  const maxPrice = maxPriceParam ? parseFloat(maxPriceParam) : null;
-
-  const minAccommodatesParam = searchParams.get("minAccommodates");
-  const minAccommodates = minAccommodatesParam
-    ? parseInt(minAccommodatesParam, 10)
-    : null;
-
-  const maxAccommodatesParam = searchParams.get("maxAccommodates");
-  const maxAccommodates = maxAccommodatesParam
-    ? parseInt(maxAccommodatesParam, 10)
-    : null;
-
-  const minBedroomsParam = searchParams.get("minBedrooms");
-  const minBedrooms = minBedroomsParam ? parseInt(minBedroomsParam, 10) : null;
-
-  const maxBedroomsParam = searchParams.get("maxBedrooms");
-  const maxBedrooms = maxBedroomsParam ? parseInt(maxBedroomsParam, 10) : null;
-
-  const minReviewScoreParam = searchParams.get("minReviewScore");
-  const minReviewScore = minReviewScoreParam
-    ? parseFloat(minReviewScoreParam)
-    : null;
-
-  const maxReviewScoreParam = searchParams.get("maxReviewScore");
-  const maxReviewScore = maxReviewScoreParam
-    ? parseFloat(maxReviewScoreParam)
-    : null;
-
-  const hostIsSuperhost = searchParams.get("hostIsSuperhost") === "true";
-  const instantBookable = searchParams.get("instantBookable") === "true";
-
-  return {
-    zipCodes,
-    roomTypes,
-    propertyTypes,
-    minPrice,
-    maxPrice,
-    minAccommodates,
-    maxAccommodates,
-    minBedrooms,
-    maxBedrooms,
-    minReviewScore,
-    maxReviewScore,
-    hostIsSuperhost,
-    instantBookable,
-  };
 }

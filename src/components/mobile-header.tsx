@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { BarChart3, HelpCircle, Info, List, MapIcon, Star } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useDashboard } from "@/contexts/dashboard-context";
@@ -94,12 +94,7 @@ export function MobileHeader() {
               <List className="w-4 h-4 mr-1" />
               List
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="shadow-sm"
-            >
+            <Button variant="outline" size="sm" asChild className="shadow-sm">
               <Link href="/featured">
                 <Star className="w-4 h-4 mr-1" />
                 Featured

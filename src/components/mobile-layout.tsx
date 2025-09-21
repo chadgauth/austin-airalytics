@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Filter, List, MapIcon } from "lucide-react";
+import { motion } from "motion/react";
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { useDashboard } from "@/contexts/dashboard-context";

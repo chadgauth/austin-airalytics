@@ -1,8 +1,8 @@
 "use client";
 
 import type { Column, ColumnDef } from "@tanstack/react-table";
-import { motion } from "framer-motion";
 import { ArrowDown, ArrowUp, ImageIcon } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -25,35 +25,37 @@ const SortableHeaderButton = ({
   tooltip?: string;
 }) => {
   const isSorted = Boolean(column.getIsSorted());
-  return <Button
-    variant="ghost"
-    size="sm"
-    className={cn(
-      "pl-[8px]!",
-      isNumeric && "justify-end w-full pr-2!",
-      isNumeric && isSorted && "pl-0!",
-      !isNumeric && "pr-5!",
-      !isNumeric && isSorted && "pr-1.5!",
-      "cursor-pointer",
-      className,
-    )}
-    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    aria-label={
-      column.getIsSorted() === "asc"
-        ? `Sort ${label} descending`
-        : `Sort ${label} ascending`
-    }
-    title={tooltip}
-  >
-    {!isNumeric && label}
-    {isSorted &&
-      (column.getIsSorted() === "asc" ? (
-        <ArrowUp className="size-3" />
-      ) : (
-        <ArrowDown className="size-3" />
-      ))}
-    {isNumeric && label}
-  </Button>
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className={cn(
+        "pl-[8px]!",
+        isNumeric && "justify-end w-full pr-2!",
+        isNumeric && isSorted && "pl-0!",
+        !isNumeric && "pr-5!",
+        !isNumeric && isSorted && "pr-1.5!",
+        "cursor-pointer",
+        className,
+      )}
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      aria-label={
+        column.getIsSorted() === "asc"
+          ? `Sort ${label} descending`
+          : `Sort ${label} ascending`
+      }
+      title={tooltip}
+    >
+      {!isNumeric && label}
+      {isSorted &&
+        (column.getIsSorted() === "asc" ? (
+          <ArrowUp className="size-3" />
+        ) : (
+          <ArrowDown className="size-3" />
+        ))}
+      {isNumeric && label}
+    </Button>
+  );
 };
 
 export const columns: ColumnDef<Listing>[] = [
@@ -99,7 +101,9 @@ export const columns: ColumnDef<Listing>[] = [
             )}
             <div className="flex flex-col">
               <div>{decodeHtmlEntities(row.original.host_name)}</div>
-              <div className="text-[11px] text-gray-700">{row.original.name}</div>
+              <div className="text-[11px] text-gray-700">
+                {row.original.name}
+              </div>
             </div>
           </div>
         </Link>

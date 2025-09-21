@@ -1,7 +1,7 @@
 import { cloneElement, forwardRef, isValidElement } from "react";
 import { cn } from "@/utils/server-utils";
 
-export interface InputProps
+interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   children?: React.ReactNode;
 }

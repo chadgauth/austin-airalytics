@@ -7,8 +7,8 @@ import { columns } from "./listings/listings-columns";
 import { DataTable } from "./listings/listings-table";
 import { FiltersSidebar } from "@/components/filters-sidebar";
 import { DashboardProvider } from "@/contexts/dashboard-context";
-import { trpc } from "@/lib/trpc/client";
 import type { FilterOptions, Filters } from "@/types/filters";
+import { trpc } from "@/utils/trpc";
 
 export const dynamic = "force-dynamic";
 
