@@ -2,24 +2,23 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema.ts";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
 let databaseUrl: string;
 
-if (supabaseUrl && supabaseServiceRoleKey) {
-  // Construct postgres URL from Supabase vars
-  const projectRef = supabaseUrl.replace("https://", "").split(".")[0];
-  databaseUrl = `postgresql://postgres:${supabaseServiceRoleKey}@db.${projectRef}.supabase.co:5432/postgres`;
+// Use POSTGRES_URL if available (for Vercel/Supabase)
+const postgresUrl = process.env.POSTGRES_URL;
+if (postgresUrl) {
+  databaseUrl = postgresUrl;
 } else {
-  // Fallback to direct DATABASE_URL for local dev
-  const dbUrl = process.env.DATABASE_URL;
-  if (!dbUrl) {
-    throw new Error(
-      "DATABASE_URL or SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY environment variables are required",
-    );
+  // Fallback to constructing from individual Postgres vars
+  const user = process.env.POSTGRES_USER;
+  const password = process.env.POSTGRES_PASSWORD;
+  const host = process.env.POSTGRES_HOST;
+  const database = process.env.POSTGRES_DATABASE;
+  if (user && password && host && database) {
+    databaseUrl = `postgresql://${user}:${password}@${host}:5432/${database}`;
+  } else {
+    throw new Error("POSTGRES_URL or individual POSTGRES_* environment variables are required");
   }
-  databaseUrl = dbUrl;
 }
 
 const client = postgres(databaseUrl);
