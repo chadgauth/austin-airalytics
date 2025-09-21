@@ -1,5 +1,5 @@
 import { cloneElement, forwardRef, isValidElement } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/server-utils";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

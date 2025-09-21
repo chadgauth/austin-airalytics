@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc/client";
 import type { Filters } from "@/types/filters";
 
 interface MapListing {
+  id: string;
   latitude: number;
   longitude: number;
   name: string;
@@ -95,7 +96,7 @@ function MarkersWithClustering({ listings, isLoading }: { listings: MapListing[]
                 <p class="text-xs text-gray-600 mb-3">${listing.neighbourhood_cleansed}</p>
                 <div class="flex items-center justify-between">
                   <span class="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium border border-blue-200">${listing.room_type}</span>
-                  <span class="text-xs text-blue-600 font-medium hover:text-blue-800 cursor-pointer">View details →</span>
+                  <a href="/listings/${listing.id}" class="text-xs text-blue-600 font-medium hover:text-blue-800">View details →</a>
                 </div>
               </div>
             </div>

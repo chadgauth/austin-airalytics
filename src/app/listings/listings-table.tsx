@@ -30,9 +30,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc/client";
-import { useDebounce } from "@/lib/utils";
 import type { FilterOptions, Filters } from "@/types/filters";
 import type { Listing } from "@/types/listings";
+import { useDebounce } from "@/utils/client-utils";
 
 const COLUMN_LABELS: Record<string, string> = {
   name: "Host Name / Name",
@@ -44,21 +44,13 @@ const COLUMN_LABELS: Record<string, string> = {
   actions: "Actions",
 };
 
-interface PaginatedResponse {
-  data: Listing[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
 interface DataTableProps {
   columns: ColumnDef<Listing>[];
   filters: Filters;
   filterOptions: FilterOptions | null;
 }
 
-export function DataTable({ columns, filters, filterOptions }: DataTableProps) {
+export function DataTable({ columns, filters }: DataTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(50);
   const [sorting, setSorting] = useState<SortingState>([]);

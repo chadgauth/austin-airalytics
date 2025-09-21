@@ -8,6 +8,13 @@
       "when": 1757455330778,
       "tag": "0001_chubby_ultimatum",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758487462761,
+      "tag": "0002_opposite_timeslip",
+      "breakpoints": true
     }
   ]
 }

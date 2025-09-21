@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/server-utils";
 
 interface CheckboxListProps {
   options: string[] | { value: string; count: number }[];

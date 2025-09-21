@@ -1,8 +1,8 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/server-utils";
 
 interface SliderProps
   extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
@@ -79,7 +79,10 @@ const Slider = React.forwardRef<
     }
 
     // Local state for slider value to prevent excessive API calls during drag
-    const [localSliderValue, setLocalSliderValue] = useState([sliderMin, sliderMax]);
+    const [localSliderValue, setLocalSliderValue] = useState([
+      sliderMin,
+      sliderMax,
+    ]);
 
     useEffect(() => {
       setLocalSliderValue([sliderMin, sliderMax]);
@@ -113,90 +116,91 @@ const Slider = React.forwardRef<
       return (
         <div className="space-y-1">
           <div className="text-base font-medium pb-3">{label}</div>
-            <SliderPrimitive.Root
-              ref={ref}
-              value={localSliderValue}
-              onValueChange={setLocalSliderValue}
-              onValueCommit={onValueCommitHandler}
-              min={sliderMinProp}
-              max={sliderMaxProp}
-              step={isLogarithmic ? 1 : step}
-              className={cn(
-                "relative h-14 pt-10 flex w-full touch-none select-none items-center",
-                className,
-              )}
-              {...props}
-            >
-              {volumes?.map((volume, index) => {
-                const volumePosition = isLogarithmic
-                  ? (index / volumes.length) * 100
-                  : min + (index / volumes.length) * (max - min);
-                const isSelected = volumePosition >= sliderMin && volumePosition <= sliderMax;
-                const gapPx = volumes.length < 50 ? 1 : 0
-                return (
-                  <div
-                    // biome-ignore lint/suspicious/noArrayIndexKey: <fixing this later if needs>
-                    key={index}
-                    className="absolute bottom-full bg-primary-600 rounded-xs"
-                    style={{
-                      left: `${(index / volumes.length) * 100}%`,
-                      width: `calc(${100 / volumes.length}% - ${gapPx}px)`,
-                      bottom: 12,
-                      height:
-                        maxVolume > 0
-                          ? `${Math.min((volume / maxVolume) * 80, 80)}%`
-                          : "8%",
-                      minHeight: "3px",
-                      opacity: isSelected ? 0.9 : 0.3,
-                    }}
-                  />
-                );
-              })}
-              <SliderPrimitive.Track className="relative h-1 w-full grow rounded-full bg-secondary">
-                <SliderPrimitive.Range className="absolute h-full bg-primary" />
-              </SliderPrimitive.Track>
-              <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary bg-background shadow-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50" />
-              <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary bg-background shadow-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50" />
-            </SliderPrimitive.Root>
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <Input
-                  id={`min-${label}`}
-                  type="number"
-                  value={minValue}
-                  onChange={(e) => onMinChange?.(e.target.value)}
-                  step={step}
-                  min={min}
-                  max={max}
-                  className="h-8 w-full text-sm border-primary-300 focus:border-primary-500"
+          <SliderPrimitive.Root
+            ref={ref}
+            value={localSliderValue}
+            onValueChange={setLocalSliderValue}
+            onValueCommit={onValueCommitHandler}
+            min={sliderMinProp}
+            max={sliderMaxProp}
+            step={isLogarithmic ? 1 : step}
+            className={cn(
+              "relative h-14 pt-10 flex w-full touch-none select-none items-center",
+              className,
+            )}
+            {...props}
+          >
+            {volumes?.map((volume, index) => {
+              const volumePosition = isLogarithmic
+                ? (index / volumes.length) * 100
+                : min + (index / volumes.length) * (max - min);
+              const isSelected =
+                volumePosition >= sliderMin && volumePosition <= sliderMax;
+              const gapPx = volumes.length < 50 ? 1 : 0;
+              return (
+                <div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <fixing this later if needs>
+                  key={index}
+                  className="absolute bottom-full bg-primary-600 rounded-xs"
+                  style={{
+                    left: `${(index / volumes.length) * 100}%`,
+                    width: `calc(${100 / volumes.length}% - ${gapPx}px)`,
+                    bottom: 12,
+                    height:
+                      maxVolume > 0
+                        ? `${Math.min((volume / maxVolume) * 80, 80)}%`
+                        : "8%",
+                    minHeight: "3px",
+                    opacity: isSelected ? 0.9 : 0.3,
+                  }}
                 />
-                <Label
-                  htmlFor={`min-${label}`}
-                  className="text-xs text-muted-foreground block mb-1"
-                >
-                  Min
-                </Label>
-              </div>
-              <div className="flex-1">
-                <Input
-                  id={`max-${label}`}
-                  type="number"
-                  value={maxValue}
-                  onChange={(e) => onMaxChange?.(e.target.value)}
-                  step={step}
-                  min={min}
-                  max={max}
-                  className="h-8 w-full text-sm border-primary-300 focus:border-primary-500"
-                />
-                <Label
-                  htmlFor={`max-${label}`}
-                  className="text-xs text-muted-foreground block mb-1"
-                >
-                  Max
-                </Label>
-              </div>
+              );
+            })}
+            <SliderPrimitive.Track className="relative h-1 w-full grow rounded-full bg-secondary">
+              <SliderPrimitive.Range className="absolute h-full bg-primary" />
+            </SliderPrimitive.Track>
+            <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary bg-background shadow-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50" />
+            <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary bg-background shadow-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50" />
+          </SliderPrimitive.Root>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Input
+                id={`min-${label}`}
+                type="number"
+                value={minValue}
+                onChange={(e) => onMinChange?.(e.target.value)}
+                step={step}
+                min={min}
+                max={max}
+                className="h-8 w-full text-sm border-primary-300 focus:border-primary-500"
+              />
+              <Label
+                htmlFor={`min-${label}`}
+                className="text-xs text-muted-foreground block mb-1"
+              >
+                Min
+              </Label>
+            </div>
+            <div className="flex-1">
+              <Input
+                id={`max-${label}`}
+                type="number"
+                value={maxValue}
+                onChange={(e) => onMaxChange?.(e.target.value)}
+                step={step}
+                min={min}
+                max={max}
+                className="h-8 w-full text-sm border-primary-300 focus:border-primary-500"
+              />
+              <Label
+                htmlFor={`max-${label}`}
+                className="text-xs text-muted-foreground block mb-1"
+              >
+                Max
+              </Label>
             </div>
           </div>
+        </div>
       );
     }
 
@@ -238,4 +242,3 @@ const Slider = React.forwardRef<
 Slider.displayName = SliderPrimitive.Root.displayName;
 
 export { Slider };
-

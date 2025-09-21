@@ -1,13 +1,16 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import DashboardLayout from "./dashboard-layout";
-import { columns } from "./listings.columns";
-import { DataTable } from "./listings.data-table";
+import { columns } from "./listings/listings-columns";
+import { DataTable } from "./listings/listings-table";
 import { FiltersSidebar } from "@/components/filters-sidebar";
+import { DashboardProvider } from "@/contexts/dashboard-context";
 import { trpc } from "@/lib/trpc/client";
 import type { FilterOptions, Filters } from "@/types/filters";
+
+export const dynamic = "force-dynamic";
 
 const FILTERS_STORAGE_KEY = "rental-insight-filters";
 
@@ -52,7 +55,7 @@ const saveFiltersToStorage = (filters: Filters) => {
 };
 
 // Dynamically import map component to avoid SSR issues
-const ListingsMap = dynamic(() => import("@/components/map"), {
+const ListingsMap = dynamicImport(() => import("@/components/map"), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center h-80 sm:h-96 lg:h-[500px] bg-muted rounded-lg">
@@ -71,17 +74,24 @@ export default function Dashboard() {
     loadFiltersFromStorage(),
   );
 
-  const { data: filterOptionsData } = trpc.listings.getFilterOptions.useQuery({});
+  const { data: filterOptionsData } = trpc.listings.getFilterOptions.useQuery(
+    {},
+  );
 
   useEffect(() => {
     if (filterOptionsData) {
       setFilterOptions(filterOptionsData);
       // Update filters with actual values from filter options only if they are still defaults
       setFilters((prev) => {
-        const isUsingDefaults = prev.minPrice === 0 && prev.maxPrice === Infinity &&
-          prev.minAccommodates === 0 && prev.maxAccommodates === Infinity &&
-          prev.minBedrooms === 0 && prev.maxBedrooms === Infinity &&
-          prev.minReviewScore === 0 && prev.maxReviewScore === Infinity;
+        const isUsingDefaults =
+          prev.minPrice === 0 &&
+          prev.maxPrice === Infinity &&
+          prev.minAccommodates === 0 &&
+          prev.maxAccommodates === Infinity &&
+          prev.minBedrooms === 0 &&
+          prev.maxBedrooms === Infinity &&
+          prev.minReviewScore === 0 &&
+          prev.maxReviewScore === Infinity;
 
         if (isUsingDefaults) {
           return {
@@ -194,31 +204,33 @@ export default function Dashboard() {
   }, [filterOptions]);
 
   return (
-    <DashboardLayout
-      map={<ListingsMap key="map" filters={filters} data-layout="map" />}
-      sidebar={
-        <FiltersSidebar
-          key="sidebar"
-          filterOptions={filterOptions}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-          onFilterOptionsChange={handleFilterOptionsChange}
-          initialFilters={filters}
-          handleMultiSelectChange={handleMultiSelectChange}
-          handleBooleanChange={handleBooleanChange}
-          createRangeHandlers={createRangeHandlers}
-          data-layout="sidebar"
-        />
-      }
-      table={
-        <DataTable
-          key="data"
-          columns={columns}
-          filters={filters}
-          filterOptions={filterOptions}
-          data-layout="table"
-        />
-      }
-    />
+    <DashboardProvider>
+      <DashboardLayout
+        map={<ListingsMap key="map" filters={filters} data-layout="map" />}
+        sidebar={
+          <FiltersSidebar
+            key="sidebar"
+            filterOptions={filterOptions}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+            onFilterOptionsChange={handleFilterOptionsChange}
+            initialFilters={filters}
+            handleMultiSelectChange={handleMultiSelectChange}
+            handleBooleanChange={handleBooleanChange}
+            createRangeHandlers={createRangeHandlers}
+            data-layout="sidebar"
+          />
+        }
+        table={
+          <DataTable
+            key="data"
+            columns={columns}
+            filters={filters}
+            filterOptions={filterOptions}
+            data-layout="table"
+          />
+        }
+      />
+    </DashboardProvider>
   );
 }

@@ -1,19 +1,15 @@
 "use client";
 
 import type { Column, ColumnDef } from "@tanstack/react-table";
-import {
-  ArrowDown,
-  ArrowUp,
-  ImageIcon,
-} from "lucide-react";
 import { motion } from "framer-motion";
+import { ArrowDown, ArrowUp, ImageIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import type { Listing } from "../types/listings";
+import type { Listing } from "../../types/listings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn, decodeHtmlEntities, formatCurrency } from "@/lib/utils";
-
+import { cn, decodeHtmlEntities, formatCurrency } from "@/utils/server-utils";
 
 const SortableHeaderButton = ({
   column,
@@ -27,13 +23,18 @@ const SortableHeaderButton = ({
   className?: string;
   isNumeric?: boolean;
   tooltip?: string;
-}) => (
-  <Button
+}) => {
+  const isSorted = Boolean(column.getIsSorted());
+  return <Button
     variant="ghost"
     size="sm"
     className={cn(
       "pl-[8px]!",
-      isNumeric && "justify-end w-full pr-0.5!",
+      isNumeric && "justify-end w-full pr-2!",
+      isNumeric && isSorted && "pl-0!",
+      !isNumeric && "pr-5!",
+      !isNumeric && isSorted && "pr-1.5!",
+      "cursor-pointer",
       className,
     )}
     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -44,16 +45,16 @@ const SortableHeaderButton = ({
     }
     title={tooltip}
   >
-    {label}
-    {Boolean(column.getIsSorted()) && (
-        column.getIsSorted() === "asc" ? (
-          <ArrowUp className="size-3" />
-        ) : (
-          <ArrowDown className="size-3" />
-        )
-    )}
+    {!isNumeric && label}
+    {isSorted &&
+      (column.getIsSorted() === "asc" ? (
+        <ArrowUp className="size-3" />
+      ) : (
+        <ArrowDown className="size-3" />
+      ))}
+    {isNumeric && label}
   </Button>
-);
+};
 
 export const columns: ColumnDef<Listing>[] = [
   {
@@ -66,40 +67,42 @@ export const columns: ColumnDef<Listing>[] = [
       const [imageLoaded, setImageLoaded] = useState(false);
 
       return (
-        <div className="flex items-center gap-3">
-          {imageError ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"
-            >
-              <ImageIcon className="w-6 h-6 text-gray-400" />
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: imageLoaded ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-12 h-12"
-            >
-              <Image
-                src={row.original.picture_url}
-                alt={row.original.name}
-                width={48}
-                height={48}
-                className="rounded-md object-cover w-full h-full"
-                loading="lazy"
-                onError={() => setImageError(true)}
-                onLoad={() => setImageLoaded(true)}
-              />
-            </motion.div>
-          )}
-          <div className="flex flex-col">
-            <div>{decodeHtmlEntities(row.original.host_name)}</div>
-            <div className="text-[11px] text-gray-700">{row.original.name}</div>
+        <Link href={`/listings/${row.original.id}`} className="block">
+          <div className="flex items-center gap-3 hover:bg-muted/50 rounded-md p-2 -m-2 transition-colors">
+            {imageError ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"
+              >
+                <ImageIcon className="w-6 h-6 text-gray-400" />
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: imageLoaded ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="w-12 h-12"
+              >
+                <Image
+                  src={row.original.picture_url}
+                  alt={row.original.name}
+                  width={48}
+                  height={48}
+                  className="rounded-md object-cover w-full h-full"
+                  loading="lazy"
+                  onError={() => setImageError(true)}
+                  onLoad={() => setImageLoaded(true)}
+                />
+              </motion.div>
+            )}
+            <div className="flex flex-col">
+              <div>{decodeHtmlEntities(row.original.host_name)}</div>
+              <div className="text-[11px] text-gray-700">{row.original.name}</div>
+            </div>
           </div>
-        </div>
+        </Link>
       );
     },
   },

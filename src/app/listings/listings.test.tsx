@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/utils/server-utils";
 
 describe("formatCurrency", () => {
   it('formats "$209.00" correctly and does not return N/A', () => {

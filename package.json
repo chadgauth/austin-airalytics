@@ -5,11 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "cross-env NODE_ENV=production next build --turbopack",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:prod": "cross-env NODE_ENV=production drizzle-kit migrate",
+    "db:push:prod": "cross-env NODE_ENV=production drizzle-kit push",
+    "db:migrate:local": "cross-env NODE_ENV=development drizzle-kit migrate",
+    "db:push:local": "cross-env NODE_ENV=development drizzle-kit push",
+    "seed:listings": "deno run --allow-env --allow-net --allow-read --env-file=.env.production scripts/load-listings.ts",
+    "seed:hosts": "deno run --allow-env --allow-net --allow-read --env-file=.env.production scripts/load-hosts.ts",
+    "seed:local:listings": "deno run --allow-env --allow-net --allow-read --env-file=.env.local scripts/load-listings.ts",
+    "seed:local:hosts": "deno run --allow-env --allow-net --allow-read --env-file=.env.local scripts/load-hosts.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.3",
@@ -58,6 +67,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/ui": "^3.2.4",
+    "cross-env": "^10.0.0",
+    "dotenv": "^17.2.2",
     "jsdom": "^26.1.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.7",
