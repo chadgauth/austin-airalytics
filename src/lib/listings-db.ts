@@ -1,7 +1,19 @@
-import { db } from "@/db";
+import fs from "node:fs";
+import path from "node:path";
 import { hosts, listings as listingsTable } from "@/db/schema";
 import { enhanceListings, processListings } from "@/lib/listings-processor";
 import type { Listing } from "@/types/listings";
+
+function getLocalImagePath(id: string, originalUrl: string): string {
+  const imagesDir = path.join(process.cwd(), "public", "images", "listings");
+  const filename = `${id}_824x463.webp`;
+  const filepath = path.join(imagesDir, filename);
+
+  if (fs.existsSync(filepath)) {
+    return `/images/listings/${filename}`;
+  }
+  return originalUrl;
+}
 
 export const listingSelect = {
   // Listings fields
@@ -100,7 +112,7 @@ function rowToListing(row: any): Listing {
     name: row.name || "",
     description: row.description || "",
     neighborhood_overview: row.neighborhood_overview || "",
-    picture_url: row.picture_url || "",
+    picture_url: getLocalImagePath(String(row.id), row.picture_url || ""),
     host_id: String(row.host_id || ""),
     host_url: row.host_url || "",
     host_name: row.host_name || "",
@@ -166,7 +178,9 @@ function rowToListing(row: any): Listing {
     review_scores_value: String(row.review_scores_value || ""),
     license: row.license || "",
     instant_bookable: String(row.instant_bookable || false),
-    calculated_host_listings_count: String(row.calculated_host_listings_count || ""),
+    calculated_host_listings_count: String(
+      row.calculated_host_listings_count || "",
+    ),
     calculated_host_listings_count_entire_homes: String(
       row.calculated_host_listings_count_entire_homes || "",
     ),
