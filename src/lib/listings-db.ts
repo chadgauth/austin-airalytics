@@ -4,9 +4,14 @@ import { hosts, listings as listingsTable } from "@/db/schema";
 import { enhanceListings, processListings } from "@/lib/listings-processor";
 import type { Listing } from "@/types/listings";
 
-function getLocalImagePath(id: string, originalUrl: string): string {
+function getLocalImagePath(
+  id: string,
+  originalUrl: string,
+  size: "card" | "detail" = "detail",
+): string {
   const imagesDir = path.join(process.cwd(), "public", "images", "listings");
-  const filename = `${id}_824x463.webp`;
+  const suffix = size === "card" ? "_388x388" : "_824x463";
+  const filename = `${id}${suffix}.webp`;
   const filepath = path.join(imagesDir, filename);
 
   if (fs.existsSync(filepath)) {
@@ -112,7 +117,7 @@ function rowToListing(row: any): Listing {
     name: row.name || "",
     description: row.description || "",
     neighborhood_overview: row.neighborhood_overview || "",
-    picture_url: getLocalImagePath(String(row.id), row.picture_url || ""),
+    picture_url: getLocalImagePath(String(row.id), row.picture_url || "", "detail"),
     host_id: String(row.host_id || ""),
     host_url: row.host_url || "",
     host_name: row.host_name || "",

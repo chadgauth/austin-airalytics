@@ -3,6 +3,7 @@
 import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/server-utils";
@@ -22,6 +23,7 @@ export interface FeaturedListing {
 
 export function ListingCard({ listing }: { listing: FeaturedListing }) {
   const router = useRouter();
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
     if ('startViewTransition' in document) {
@@ -33,8 +35,15 @@ export function ListingCard({ listing }: { listing: FeaturedListing }) {
     }
   };
 
+  const largerImageUrl = listing.picture_url.replace("_388x388", "_824x463");
+
   return (
-    <Card className="group cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]" onClick={handleClick}>
+    <Card
+      className="group cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+      onClick={handleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <CardContent className="p-0">
         <div className="relative aspect-square overflow-hidden rounded-t-lg">
           <Image
@@ -47,6 +56,15 @@ export function ListingCard({ listing }: { listing: FeaturedListing }) {
               e.currentTarget.style.display = "none";
             }}
           />
+          {isHovered && (
+            <Image
+              src={largerImageUrl}
+              alt=""
+              width={824}
+              height={463}
+              style={{ display: "none" }}
+            />
+          )}
           <div className="absolute top-2 right-2">
             <Badge
               variant="secondary"

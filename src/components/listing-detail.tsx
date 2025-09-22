@@ -29,7 +29,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Image */}
-            <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+            <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
               {listing.picture_url && (
                 <Image
                   src={listing.picture_url}
