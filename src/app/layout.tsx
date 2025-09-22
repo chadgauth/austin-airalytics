@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import React from "react";
+import React, { unstable_ViewTransition as ViewTransition } from "react";
 import { TRPCProvider } from "@/lib/trpc/providers";
 
 const geistSans = Geist({
@@ -31,7 +31,9 @@ export default function RootLayout({
       >
         <React.StrictMode>
           <TRPCProvider>
-            <main className="flex-1">{children}</main>
+            <ViewTransition>
+              <main className="flex-1">{children}</main>
+            </ViewTransition>
           </TRPCProvider>
         </React.StrictMode>
       </body>
