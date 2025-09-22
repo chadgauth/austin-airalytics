@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, List, MapIcon } from "lucide-react";
+import { List, MapIcon } from "lucide-react";
 import { motion } from "motion/react";
 import type React from "react";
 
@@ -18,7 +18,7 @@ export function DesktopLayout({ sidebar, map, table }: DesktopLayoutProps) {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
+            transition={{ duration: 0.3 }}
             className="w-80 flex-shrink-0"
           >
             <div className="sticky top-8">{sidebar}</div>
@@ -26,9 +26,9 @@ export function DesktopLayout({ sidebar, map, table }: DesktopLayoutProps) {
 
           <div className="flex-1 space-y-8">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
             >
               <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 p-6 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
@@ -53,7 +53,7 @@ export function DesktopLayout({ sidebar, map, table }: DesktopLayoutProps) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.9 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
             >
               <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 p-6 shadow-lg">
                 <div className="flex items-center gap-3 mb-6">

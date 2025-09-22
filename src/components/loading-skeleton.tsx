@@ -15,7 +15,7 @@ export function LoadingSkeleton({ sections }: LoadingSkeletonProps) {
         // biome-ignore lint/suspicious/noArrayIndexKey: <fine for skeletons>
         <div key={`section-${sectionIndex}`}>
           {section.title && (
-            <div className="h-5 bg-muted/50 rounded animate-pulse mb-3"></div>
+            <div className="h-5 bg-muted/70 rounded animate-pulse mb-3"></div>
           )}
           {section.gridCols && section.items ? (
             <div className={`grid grid-cols-${section.gridCols} gap-${section.gridCols === 2 ? 2 : 3}`}>

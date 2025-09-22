@@ -21,6 +21,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
         subtitle={`Hosted by ${decodeHtmlEntities(listing.host_name)}`}
         backHref="/listings"
         backLabel="Back to Listings"
+        viewTransitionName={`listing-title-${listing.id}`}
       />
 
       <div className="container mx-auto px-4 py-6">
@@ -35,6 +36,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                   alt={listing.name}
                   fill
                   className="object-cover"
+                  style={{ viewTransitionName: `listing-image-${listing.id}` }}
                 />
               )}
               <div className="absolute top-4 right-4">

@@ -5,9 +5,13 @@ import { type FeaturedListing, ListingCard } from "./listing-card";
 import { db } from "@/db";
 import { hosts, listings as listingsTable } from "@/db/schema";
 
-function getLocalImagePath(id: string, originalUrl: string, size: 'card' | 'detail' = 'card'): string {
+function getLocalImagePath(
+  id: string,
+  originalUrl: string,
+  size: "card" | "detail" = "card",
+): string {
   const imagesDir = path.join(process.cwd(), "public", "images", "listings");
-  const suffix = size === 'card' ? '_388x388' : '_824x463';
+  const suffix = size === "card" ? "_388x388" : "_824x463";
   const filename = `${id}${suffix}.webp`;
   const filepath = path.join(imagesDir, filename);
 
@@ -38,7 +42,9 @@ export function FeaturedListings({ title, listings }: FeaturedListingsProps) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {listings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
+            <div key={listing.id}>
+              <ListingCard listing={listing} />
+            </div>
           ))}
         </div>
       </div>
@@ -76,7 +82,11 @@ export async function getTopRatedListings(limit = 6) {
     return rawListings.map((row) => ({
       id: String(row.id),
       name: row.name || "",
-      picture_url: getLocalImagePath(String(row.id), row.picture_url || "", 'card'),
+      picture_url: getLocalImagePath(
+        String(row.id),
+        row.picture_url || "",
+        "card",
+      ),
       price: row.price || "",
       neighbourhood_cleansed: row.neighbourhood_cleansed || "",
       review_scores_rating: String(row.review_scores_rating || ""),
@@ -115,7 +125,11 @@ export async function getMostReviewedListings(limit = 6) {
     return rawListings.map((row) => ({
       id: String(row.id),
       name: row.name || "",
-      picture_url: getLocalImagePath(String(row.id), row.picture_url || "", 'card'),
+      picture_url: getLocalImagePath(
+        String(row.id),
+        row.picture_url || "",
+        "card",
+      ),
       price: row.price || "",
       neighbourhood_cleansed: row.neighbourhood_cleansed || "",
       review_scores_rating: String(row.review_scores_rating || ""),
@@ -154,7 +168,11 @@ export async function getSuperhostListings(limit = 6) {
     return rawListings.map((row) => ({
       id: String(row.id),
       name: row.name || "",
-      picture_url: getLocalImagePath(String(row.id), row.picture_url || "", 'card'),
+      picture_url: getLocalImagePath(
+        String(row.id),
+        row.picture_url || "",
+        "card",
+      ),
       price: row.price || "",
       neighbourhood_cleansed: row.neighbourhood_cleansed || "",
       review_scores_rating: String(row.review_scores_rating || ""),
@@ -193,7 +211,11 @@ export async function getCheapestListings(limit = 6) {
     return rawListings.map((row) => ({
       id: String(row.id),
       name: row.name || "",
-      picture_url: getLocalImagePath(String(row.id), row.picture_url || "", 'card'),
+      picture_url: getLocalImagePath(
+        String(row.id),
+        row.picture_url || "",
+        "card",
+      ),
       price: row.price || "",
       neighbourhood_cleansed: row.neighbourhood_cleansed || "",
       review_scores_rating: String(row.review_scores_rating || ""),

@@ -150,7 +150,7 @@ export function DataTable({ columns, filters, isMobile }: DataTableProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.3 }}
       className={cn("w-full", isMobile ? "flex flex-col" : "")}
     >
       <div className="flex items-center relative gap-2 py-2 max-w-sm flex-shrink-0">

@@ -6,6 +6,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { ButtonGrid } from "@/components/button-grid";
 import { CheckboxList } from "@/components/checkbox-list";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -102,30 +103,35 @@ export const FiltersSidebar = memo(function FiltersSidebar({
 
   if (!filterOptions || !initialFilters) {
     return (
-      <LoadingSkeleton
-        sections={[
-          { title: true, extraElements: 2 }, // Price Range
-          { title: true, items: 4, gridCols: 2, itemHeight: "h-16" }, // Room Type
-          { title: true, items: 1, itemHeight: "h-10" }, // Accommodates
-          { title: true, items: 1, itemHeight: "h-10" }, // Bedrooms
-          { title: true, items: 3, itemHeight: "h-8" }, // Property Type
-          {
-            title: true,
-            items: 6,
-            gridCols: 2,
-            itemHeight: "h-10",
-            extraElements: 1,
-          }, // Zip Code (with extra subtitle)
-          { title: true, items: 1, itemHeight: "h-10" }, // Review Score
-          { title: true, items: 2, itemHeight: "h-8" }, // Host Filters
-        ]}
-      />
+      <Card className="w-full max-w-sm mx-auto bg-white/30 backdrop-blur-sm border-neutral-200/30 shadow-sm">
+        <CardContent className="p-6">
+          <LoadingSkeleton
+            sections={[
+              { title: true, extraElements: 2 }, // Price Range
+              { title: true, items: 4, gridCols: 2, itemHeight: "h-16" }, // Room Type
+              { title: true, items: 1, itemHeight: "h-10" }, // Accommodates
+              { title: true, items: 1, itemHeight: "h-10" }, // Bedrooms
+              { title: true, items: 3, itemHeight: "h-8" }, // Property Type
+              {
+                title: true,
+                items: 6,
+                gridCols: 2,
+                itemHeight: "h-10",
+                extraElements: 1,
+              }, // Zip Code (with extra subtitle)
+              { title: true, items: 1, itemHeight: "h-10" }, // Review Score
+              { title: true, items: 2, itemHeight: "h-8" }, // Host Filters
+            ]}
+          />
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto bg-white/30 backdrop-blur-sm rounded-2xl border border-neutral-200/30 p-6 shadow-sm">
-      <div className="space-y-8">
+    <Card className="w-full max-w-sm mx-auto bg-white/30 backdrop-blur-sm border-neutral-200/30 shadow-sm">
+      <CardContent className="p-6">
+        <div className="space-y-8">
         {/* Price Range Filter - Most Important */}
         {filterOptions && (
           <Slider
@@ -309,7 +315,8 @@ export const FiltersSidebar = memo(function FiltersSidebar({
             handleBooleanChange(value as keyof Filters, checked)
           }
         />
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 });

@@ -9,13 +9,9 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { HeroSection } from "@/components/hero-section";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title:
@@ -53,45 +49,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950">
-        <div className="container mx-auto px-4 py-20 lg:py-32">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
-              <span className="text-gradient-primary">Rental Insight Pro</span>
-              <br />
-              <span className="text-foreground">Austin Airbnb Analytics</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              A comprehensive case study showcasing advanced analytics for
-              Austin's Airbnb market. Built with Next.js 15, tRPC, Supabase, and
-              modern web technologies to deliver unparalleled insights into
-              rental property performance.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild className="text-lg px-8 py-6">
-                <Link href="/listings">
-                  <BarChart3 className="mr-2 h-5 w-5" />
-                  Explore Dashboard
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="text-lg px-8 py-6"
-              >
-                <Link href="/featured">
-                  <Globe className="mr-2 h-5 w-5" />
-                  Featured Listings
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      <HeroSection />
 
       {/* Technical Highlights */}
       <section className="py-20">
@@ -106,96 +64,96 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-primary/20 hover:border-primary/40 transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Zap className="h-6 w-6 text-primary" />
-                  Next.js 15 & Static Routes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Leveraging App Router with static generation for optimal
-                  performance. Routes compiled at build time for instant loading
-                  and superior SEO.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-accent/20 hover:border-accent/40 transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Database className="h-6 w-6 text-accent" />
-                  tRPC & Advanced Filtering
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Type-safe API layer with tRPC enabling complex dashboard
-                  queries. Real-time filtering across price, location, ratings,
-                  and amenities.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20 hover:border-primary/40 transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Layers className="h-6 w-6 text-primary" />
-                  Supabase & PostgreSQL
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Serverless PostgreSQL database with real-time subscriptions.
-                  Drizzle ORM for type-safe database operations and migrations.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-accent/20 hover:border-accent/40 transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Image className="h-6 w-6 text-accent" />
-                  Static Image Optimization
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Automatic optimization of remote Airbnb images. WebP
-                  conversion, responsive sizing, and lazy loading for optimal
-                  performance.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20 hover:border-primary/40 transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Globe className="h-6 w-6 text-primary" />
-                  Vercel Deployment
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Global CDN distribution with edge functions. Automatic
-                  scaling, preview deployments, and analytics integration.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-accent/20 hover:border-accent/40 transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <BarChart3 className="h-6 w-6 text-accent" />
-                  Interactive Maps & Charts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Leaflet-powered interactive maps with clustering. Real-time
-                  data visualization with custom charts and filtering
-                  capabilities.
-                </p>
-              </CardContent>
-            </Card>
+              <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Zap className="h-6 w-6 text-primary" />
+                    Next.js 15 & Static Routes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Leveraging App Router with static generation for optimal
+                    performance. Routes compiled at build time for instant loading
+                    and superior SEO.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-accent/20 hover:border-accent/40 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Database className="h-6 w-6 text-accent" />
+                    tRPC & Advanced Filtering
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Type-safe API layer with tRPC enabling complex dashboard
+                    queries. Real-time filtering across price, location, ratings,
+                    and amenities.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Layers className="h-6 w-6 text-primary" />
+                    Supabase & PostgreSQL
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Serverless PostgreSQL database with real-time subscriptions.
+                    Drizzle ORM for type-safe database operations and migrations.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-accent/20 hover:border-accent/40 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Image className="h-6 w-6 text-accent" />
+                    Static Image Optimization
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Automatic optimization of remote Airbnb images. WebP
+                    conversion, responsive sizing, and lazy loading for optimal
+                    performance.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Globe className="h-6 w-6 text-primary" />
+                    Vercel Deployment
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Global CDN distribution with edge functions. Automatic
+                    scaling, preview deployments, and analytics integration.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-accent/20 hover:border-accent/40 transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <BarChart3 className="h-6 w-6 text-accent" />
+                    Interactive Maps & Charts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Leaflet-powered interactive maps with clustering. Real-time
+                    data visualization with custom charts and filtering
+                    capabilities.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
       </section>
 
       {/* Detailed Technical Explanations */}
@@ -324,18 +282,18 @@ const { data } = trpc.listings.getFiltered.useQuery({
             Dive into comprehensive analytics, interactive maps, and detailed
             property insights powered by modern web technologies.
           </p>
-          <Button
-            size="lg"
-            variant="secondary"
-            asChild
-            className="text-lg px-8 py-6"
-          >
-            <Link href="/listings">
-              Start Exploring
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
+            <Button
+              size="lg"
+              variant="secondary"
+              asChild
+              className="text-lg px-8 py-6"
+            >
+              <Link href="/listings">
+                Start Exploring
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
       </section>
     </div>
   );

@@ -7,13 +7,15 @@ interface PageHeaderProps {
   subtitle?: string;
   backHref?: string;
   backLabel?: string;
+  viewTransitionName?: string;
 }
 
 export function PageHeader({
   title,
   subtitle,
   backHref = "/",
-  backLabel = "Back to Home"
+  backLabel = "Back to Home",
+  viewTransitionName
 }: PageHeaderProps) {
   return (
     <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
@@ -27,7 +29,7 @@ export function PageHeader({
           </Button>
           {(title || subtitle) && (
             <div className="flex-1">
-              {title && <h1 className="text-base md:text-lg font-semibold">{title}</h1>}
+              {title && <h1 className="text-base md:text-lg font-semibold" style={viewTransitionName ? { viewTransitionName } : undefined}>{title}</h1>}
               {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
             </div>
           )}
