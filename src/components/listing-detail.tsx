@@ -1,8 +1,7 @@
-import { ArrowLeft, Bath, Bed, Home, MapPin, Star, Users, Wifi } from "lucide-react";
+import { Bath, Bed, Home, MapPin, Star, Users, Wifi } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BASE_10 } from "@/lib/constants";
 import type { Listing } from "@/types/listings";
@@ -17,27 +16,12 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/listings">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Listings
-              </Link>
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-lg font-semibold truncate">
-                {decodeHtmlEntities(listing.name)}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Hosted by {decodeHtmlEntities(listing.host_name)}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title={decodeHtmlEntities(listing.name)}
+        subtitle={`Hosted by ${decodeHtmlEntities(listing.host_name)}`}
+        backHref="/listings"
+        backLabel="Back to Listings"
+      />
 
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -78,9 +62,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <Bed className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {listing.bedrooms} bedrooms
-                    </span>
+                    <span className="text-sm">{listing.bedrooms} bedrooms</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Bed className="h-4 w-4 text-muted-foreground" />
@@ -88,9 +70,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <Bath className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {listing.bathrooms} baths
-                    </span>
+                    <span className="text-sm">{listing.bathrooms} baths</span>
                   </div>
                 </div>
 
@@ -196,8 +176,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                       {decodeHtmlEntities(listing.host_name)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Host since{" "}
-                      {new Date(listing.host_since).getFullYear()}
+                      Host since {new Date(listing.host_since).getFullYear()}
                     </p>
                   </div>
                 </div>
@@ -229,8 +208,8 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    {listing.review_scores_rating} ·{" "}
-                    {listing.number_of_reviews} reviews
+                    {listing.review_scores_rating} · {listing.number_of_reviews}{" "}
+                    reviews
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

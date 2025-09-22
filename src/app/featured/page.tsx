@@ -1,5 +1,3 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import {
   FeaturedListings,
   getCheapestListings,
@@ -7,7 +5,7 @@ import {
   getSuperhostListings,
   getTopRatedListings,
 } from "@/components/featured-listings";
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
 
 export const dynamic = "force-static";
 
@@ -22,25 +20,12 @@ export default async function FeaturedPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Link>
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">Featured Listings</h1>
-              <p className="text-sm text-muted-foreground">
-                Statically generated showcase of our top listings
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Featured Listings"
+        subtitle="Statically generated showcase of our top listings"
+        backHref="/listings"
+        backLabel="Back to Dashboard"
+      />
 
       <div className="container mx-auto px-4 py-8 space-y-16">
         <div className="text-center">

@@ -1,7 +1,7 @@
 import type React from "react";
 import { DesktopLayout } from "@/components/desktop-layout";
-import { MobileHeader } from "@/components/mobile-header";
 import { MobileLayout } from "@/components/mobile-layout";
+import { PageHeader } from "@/components/page-header";
 
 // import { ProfitCalculator } from "@/components/profit-calculator";
 
@@ -16,8 +16,10 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen">
-      <MobileHeader />
-
+      <PageHeader
+        title="Austin Airbnb Analytics"
+        subtitle="Interactive dashboard for rental market insights"
+      />
       <DesktopLayout sidebar={sidebar} map={map} table={table} />
 
       <MobileLayout map={map} table={table} sidebar={sidebar} />

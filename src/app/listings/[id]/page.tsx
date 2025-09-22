@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import DynamicListingClient from "./DynamicListingClient";
+import DynamicListingClient from "./dynamic-listing-client";
 import { getFeaturedListingIds } from "@/components/featured-listings";
-import ListingDetail from "@/components/ListingDetail";
+import ListingDetail from "@/components/listing-detail";
 import { db } from "@/db";
 import { hosts, listings as listingsTable } from "@/db/schema";
 import { fetchListings, listingSelect } from "@/lib/listings-db";

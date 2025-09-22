@@ -1,236 +1,342 @@
-"use client";
+import {
+  ArrowRight,
+  BarChart3,
+  Database,
+  Globe,
+  Image,
+  Layers,
+  Zap,
+} from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-import dynamicImport from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
-import DashboardLayout from "./dashboard-layout";
-import { columns } from "./listings/listings-columns";
-import { DataTable } from "./listings/listings-table";
-import { FiltersSidebar } from "@/components/filters-sidebar";
-import { DashboardProvider } from "@/contexts/dashboard-context";
-import type { FilterOptions, Filters } from "@/types/filters";
-import { trpc } from "@/utils/trpc";
-
-export const dynamic = "force-dynamic";
-
-const FILTERS_STORAGE_KEY = "rental-insight-filters";
-
-const defaultFilters: Filters = {
-  zipCodes: [],
-  roomTypes: [],
-  propertyTypes: [],
-  minPrice: 0,
-  maxPrice: Infinity,
-  minAccommodates: 0,
-  maxAccommodates: Infinity,
-  minBedrooms: 0,
-  maxBedrooms: Infinity,
-  minReviewScore: 0,
-  maxReviewScore: Infinity,
-  hostIsSuperhost: false,
-  instantBookable: false,
+export const metadata: Metadata = {
+  title:
+    "Rental Insight Pro - Austin Airbnb Analytics Case Study | Next.js 15 & tRPC",
+  description:
+    "Explore Austin's Airbnb market with advanced analytics. Built with Next.js 15, tRPC, Supabase, and static optimization. Case study showcasing modern web development techniques for rental property insights.",
+  keywords: [
+    "Austin Airbnb analytics",
+    "rental property insights",
+    "Next.js 15 case study",
+    "tRPC dashboard",
+    "Supabase PostgreSQL",
+    "static site generation",
+    "image optimization",
+    "React 19",
+    "TypeScript",
+    "Tailwind CSS",
+  ],
+  authors: [{ name: "Rental Insight Pro Team" }],
+  openGraph: {
+    title: "Rental Insight Pro - Austin Airbnb Analytics Case Study",
+    description:
+      "Advanced Airbnb analytics platform built with cutting-edge web technologies. Explore Austin's rental market with real-time data and insights.",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rental Insight Pro - Austin Airbnb Analytics",
+    description:
+      "Case study of a modern analytics platform for Austin's Airbnb market using Next.js 15, tRPC, and Supabase.",
+  },
 };
 
-// Load filters from localStorage
-const loadFiltersFromStorage = (): Filters => {
-  if (typeof window === "undefined") return defaultFilters;
-  try {
-    const stored = localStorage.getItem(FILTERS_STORAGE_KEY);
-    return stored
-      ? { ...defaultFilters, ...JSON.parse(stored) }
-      : defaultFilters;
-  } catch (error) {
-    console.warn("Failed to load filters from localStorage:", error);
-    return defaultFilters;
-  }
-};
-
-// Save filters to localStorage
-const saveFiltersToStorage = (filters: Filters) => {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(filters));
-  } catch (error) {
-    console.warn("Failed to save filters to localStorage:", error);
-  }
-};
-
-// Dynamically import map component to avoid SSR issues
-const ListingsMap = dynamicImport(() => import("@/components/map"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-80 sm:h-96 lg:h-[500px] bg-muted rounded-lg">
-      <div className="text-muted-foreground">Loading map...</div>
-    </div>
-  ),
-});
-
-// import { ProfitCalculator } from "@/components/profit-calculator";
-
-export default function Dashboard() {
-  const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(
-    null,
-  );
-  const [filters, setFilters] = useState<Filters>(() =>
-    loadFiltersFromStorage(),
-  );
-
-  const { data: filterOptionsData } = trpc.listings.getFilterOptions.useQuery(
-    {},
-  );
-
-  useEffect(() => {
-    if (filterOptionsData) {
-      setFilterOptions(filterOptionsData);
-      // Update filters with actual values from filter options only if they are still defaults
-      setFilters((prev) => {
-        const isUsingDefaults =
-          prev.minPrice === 0 &&
-          prev.maxPrice === Infinity &&
-          prev.minAccommodates === 0 &&
-          prev.maxAccommodates === Infinity &&
-          prev.minBedrooms === 0 &&
-          prev.maxBedrooms === Infinity &&
-          prev.minReviewScore === 0 &&
-          prev.maxReviewScore === Infinity;
-
-        if (isUsingDefaults) {
-          return {
-            ...prev,
-            minPrice: filterOptionsData.minPrice,
-            maxPrice: filterOptionsData.maxPrice,
-            minAccommodates: filterOptionsData.minAccommodates,
-            maxAccommodates: filterOptionsData.maxAccommodates,
-            minBedrooms: filterOptionsData.minBedrooms,
-            maxBedrooms: filterOptionsData.maxBedrooms,
-            minReviewScore: filterOptionsData.minReviewScore,
-            maxReviewScore: filterOptionsData.maxReviewScore,
-          };
-        }
-        return prev;
-      });
-    }
-  }, [filterOptionsData]);
-
-  // Handlers
-  const handleMultiSelectChange = useCallback(
-    (
-      key: "zipCodes" | "roomTypes" | "propertyTypes",
-      value: string,
-      checked: boolean,
-    ) => {
-      setFilters((prev) => {
-        const current = prev[key];
-        const newFilters = {
-          ...prev,
-          [key]: checked
-            ? [...current, value]
-            : current.filter((v) => v !== value),
-        };
-        saveFiltersToStorage(newFilters);
-        return newFilters;
-      });
-    },
-    [],
-  );
-
-  const handleBooleanChange = useCallback(
-    (key: keyof Filters, checked: boolean) => {
-      setFilters((prev) => {
-        const newFilters = { ...prev, [key]: checked };
-        saveFiltersToStorage(newFilters);
-        return newFilters;
-      });
-    },
-    [],
-  );
-
-  const createRangeHandlers = useCallback(
-    (minKey: keyof Filters, maxKey: keyof Filters) => ({
-      onChange: (min: number, max: number) =>
-        setFilters((prev) => {
-          const newFilters = { ...prev, [minKey]: min, [maxKey]: max };
-          saveFiltersToStorage(newFilters);
-          return newFilters;
-        }),
-      onMinChange: (value: string) => {
-        const num = parseFloat(value);
-        if (!Number.isNaN(num))
-          setFilters((prev) => {
-            const newFilters = { ...prev, [minKey]: num };
-            saveFiltersToStorage(newFilters);
-            return newFilters;
-          });
-      },
-      onMaxChange: (value: string) => {
-        const num = parseFloat(value);
-        if (!Number.isNaN(num))
-          setFilters((prev) => {
-            const newFilters = { ...prev, [maxKey]: num };
-            saveFiltersToStorage(newFilters);
-            return newFilters;
-          });
-      },
-    }),
-    [],
-  );
-
-  const handleFiltersChange = useCallback((newFilters: Filters) => {
-    setFilters(newFilters);
-    saveFiltersToStorage(newFilters);
-  }, []);
-
-  const handleFilterOptionsChange = useCallback((newOptions: FilterOptions) => {
-    setFilterOptions(newOptions);
-  }, []);
-
-  const handleClearFilters = useCallback(() => {
-    const clearedFilters: Filters = {
-      zipCodes: [],
-      roomTypes: [],
-      propertyTypes: [],
-      minPrice: filterOptions?.minPrice ?? 0,
-      maxPrice: filterOptions?.maxPrice ?? Infinity,
-      minAccommodates: filterOptions?.minAccommodates ?? 0,
-      maxAccommodates: filterOptions?.maxAccommodates ?? Infinity,
-      minBedrooms: filterOptions?.minBedrooms ?? 0,
-      maxBedrooms: filterOptions?.maxBedrooms ?? Infinity,
-      minReviewScore: filterOptions?.minReviewScore ?? 0,
-      maxReviewScore: filterOptions?.maxReviewScore ?? Infinity,
-      hostIsSuperhost: false,
-      instantBookable: false,
-    };
-    setFilters(clearedFilters);
-    saveFiltersToStorage(clearedFilters);
-  }, [filterOptions]);
-
+export default function Home() {
   return (
-    <DashboardProvider>
-      <DashboardLayout
-        map={<ListingsMap key="map" filters={filters} data-layout="map" />}
-        sidebar={
-          <FiltersSidebar
-            key="sidebar"
-            filterOptions={filterOptions}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={handleClearFilters}
-            onFilterOptionsChange={handleFilterOptionsChange}
-            initialFilters={filters}
-            handleMultiSelectChange={handleMultiSelectChange}
-            handleBooleanChange={handleBooleanChange}
-            createRangeHandlers={createRangeHandlers}
-            data-layout="sidebar"
-          />
-        }
-        table={
-          <DataTable
-            key="data"
-            columns={columns}
-            filters={filters}
-            filterOptions={filterOptions}
-            data-layout="table"
-          />
-        }
-      />
-    </DashboardProvider>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950">
+        <div className="container mx-auto px-4 py-20 lg:py-32">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
+              <span className="text-gradient-primary">Rental Insight Pro</span>
+              <br />
+              <span className="text-foreground">Austin Airbnb Analytics</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+              A comprehensive case study showcasing advanced analytics for
+              Austin's Airbnb market. Built with Next.js 15, tRPC, Supabase, and
+              modern web technologies to deliver unparalleled insights into
+              rental property performance.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" asChild className="text-lg px-8 py-6">
+                <Link href="/listings">
+                  <BarChart3 className="mr-2 h-5 w-5" />
+                  Explore Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="text-lg px-8 py-6"
+              >
+                <Link href="/featured">
+                  <Globe className="mr-2 h-5 w-5" />
+                  Featured Listings
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Technical Highlights */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Technical Excellence
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Built with cutting-edge technologies and best practices for
+              performance, scalability, and developer experience
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Zap className="h-6 w-6 text-primary" />
+                  Next.js 15 & Static Routes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Leveraging App Router with static generation for optimal
+                  performance. Routes compiled at build time for instant loading
+                  and superior SEO.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-accent/20 hover:border-accent/40 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Database className="h-6 w-6 text-accent" />
+                  tRPC & Advanced Filtering
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Type-safe API layer with tRPC enabling complex dashboard
+                  queries. Real-time filtering across price, location, ratings,
+                  and amenities.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Layers className="h-6 w-6 text-primary" />
+                  Supabase & PostgreSQL
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Serverless PostgreSQL database with real-time subscriptions.
+                  Drizzle ORM for type-safe database operations and migrations.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-accent/20 hover:border-accent/40 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Image className="h-6 w-6 text-accent" />
+                  Static Image Optimization
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Automatic optimization of remote Airbnb images. WebP
+                  conversion, responsive sizing, and lazy loading for optimal
+                  performance.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Globe className="h-6 w-6 text-primary" />
+                  Vercel Deployment
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Global CDN distribution with edge functions. Automatic
+                  scaling, preview deployments, and analytics integration.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-accent/20 hover:border-accent/40 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <BarChart3 className="h-6 w-6 text-accent" />
+                  Interactive Maps & Charts
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Leaflet-powered interactive maps with clustering. Real-time
+                  data visualization with custom charts and filtering
+                  capabilities.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Detailed Technical Explanations */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Deep Dive: Technical Implementation
+            </h2>
+
+            <div className="space-y-12">
+              <div>
+                <h3 className="text-2xl font-bold mb-4 text-primary">
+                  Static Site Generation & Performance
+                </h3>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Our featured listings page demonstrates Next.js 15's static
+                  generation capabilities. All data is fetched at build time
+                  using server components, resulting in pre-rendered HTML that
+                  loads instantly. This approach eliminates database queries on
+                  the client-side for static content while maintaining dynamic
+                  capabilities where needed.
+                </p>
+                <div className="bg-background rounded-lg p-6 border">
+                  <pre className="text-sm overflow-x-auto">
+                    <code className="font-mono">
+                      {`export const dynamic = "force-static";
+
+export default async function FeaturedPage() {
+  const listings = await getTopRatedListings(6);
+  // Data fetched at build time, cached as static HTML
+}`}
+                    </code>
+                  </pre>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-bold mb-4 text-accent">
+                  tRPC for Type-Safe APIs
+                </h3>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  tRPC provides end-to-end type safety between frontend and
+                  backend. Our dashboard uses complex filtering logic that
+                  benefits from automatic type inference. The filtering system
+                  supports multiple criteria including price ranges, locations,
+                  property types, and host characteristics.
+                </p>
+                <div className="bg-background rounded-lg p-6 border">
+                  <pre className="text-sm overflow-x-auto">
+                    <code className="font-mono">
+                      {`// Type-safe API with automatic inference
+const { data } = trpc.listings.getFiltered.useQuery({
+  filters: {
+    minPrice: 100,
+    maxPrice: 500,
+    propertyTypes: ['Apartment', 'House']
+  }
+});`}
+                    </code>
+                  </pre>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-bold mb-4 text-primary">
+                  Image Optimization Pipeline
+                </h3>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Remote Airbnb images are automatically optimized using Next.js
+                  Image component. Images are converted to WebP format, resized
+                  responsively, and served via CDN. This reduces bandwidth by up
+                  to 70% while maintaining visual quality.
+                </p>
+                <div className="bg-background rounded-lg p-6 border">
+                  <pre className="text-sm overflow-x-auto">
+                    <code className="font-mono">
+                      {`<Image
+  src="https://a0.muscache.com/remote-image.jpg"
+  alt="Listing"
+  width={388}
+  height={388}
+  className="rounded-lg"
+/>`}
+                    </code>
+                  </pre>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-bold mb-4 text-accent">
+                  Database Architecture
+                </h3>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Supabase provides a PostgreSQL database with real-time
+                  capabilities. Drizzle ORM ensures type-safe queries and
+                  migrations. The schema includes comprehensive listing data
+                  with relationships for hosts, reviews, and location
+                  information.
+                </p>
+                <div className="bg-background rounded-lg p-6 border">
+                  <pre className="text-sm overflow-x-auto">
+                    <code className="font-mono">
+                      {`export const listings = pgTable("listings", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  price: integer("price").notNull(),
+  // ... comprehensive schema
+});`}
+                    </code>
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 bg-gradient-to-r from-primary-500 to-accent-500 text-primary-foreground">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Explore Austin's Airbnb Market?
+          </h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+            Dive into comprehensive analytics, interactive maps, and detailed
+            property insights powered by modern web technologies.
+          </p>
+          <Button
+            size="lg"
+            variant="secondary"
+            asChild
+            className="text-lg px-8 py-6"
+          >
+            <Link href="/listings">
+              Start Exploring
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+    </div>
   );
 }

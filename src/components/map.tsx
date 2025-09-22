@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet.markercluster";
 import type { Filters } from "@/types/filters";
+import { cn } from "@/utils/server-utils";
 import { trpc } from "@/utils/trpc";
 
 interface MapListing {
@@ -270,7 +271,7 @@ export default function ListingsMap({
 
   return (
     <div
-      className={`relative h-80 sm:h-96 lg:h-[500px] w-full rounded-lg overflow-hidden border shadow-sm ${className || ""}`}
+      className={cn("relative w-full rounded-lg overflow-hidden border shadow-sm h-full", className)}
     >
       <MapContainer
         center={displayCenter}

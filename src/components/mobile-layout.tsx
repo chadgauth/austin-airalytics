@@ -1,7 +1,8 @@
 "use client";
 
-import { Filter, List, MapIcon } from "lucide-react";
+import { Filter, List, MapIcon, Star } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { useDashboard } from "@/contexts/dashboard-context";
@@ -13,10 +14,39 @@ interface MobileLayoutProps {
 }
 
 export function MobileLayout({ map, table, sidebar }: MobileLayoutProps) {
-  const { mobileView, filtersOpen, setFiltersOpen } = useDashboard();
+  const { mobileView, filtersOpen, setFiltersOpen, setMobileView } =
+    useDashboard();
 
   return (
-    <div className="md:hidden relative">
+    <div className="md:hidden relative h-[calc(100vh-83px)] flex flex-col">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 pt-3 pl-3">
+          <Button
+            variant={mobileView === "map" ? "gradient" : "outline"}
+            size="sm"
+            onClick={() => setMobileView("map")}
+            className="shadow-sm"
+          >
+            <MapIcon className="w-4 h-4 mr-1" />
+            Map
+          </Button>
+          <Button
+            variant={mobileView === "list" ? "gradient" : "outline"}
+            size="sm"
+            onClick={() => setMobileView("list")}
+            className="shadow-sm"
+          >
+            <List className="w-4 h-4 mr-1" />
+            List
+          </Button>
+          <Button variant="outline" size="sm" asChild className="shadow-sm">
+            <Link href="/featured">
+              <Star className="w-4 h-4 mr-1" />
+              Featured
+            </Link>
+          </Button>
+        </div>
+      </div>
       {/* Mobile Content */}
       <div className="relative h-[calc(100vh-89px)]">
         {/* Map View */}
@@ -26,10 +56,10 @@ export function MobileLayout({ map, table, sidebar }: MobileLayoutProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="h-full"
+            className="h-full p-4"
           >
-            <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 m-4 shadow-lg overflow-hidden">
-              <div className="p-4 border-b border-neutral-200/50">
+            <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 shadow-lg overflow-hidden h-full flex flex-col">
+              <div className="p-4 border-b border-neutral-200/50 flex-shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-500 to-accent-600 flex items-center justify-center">
                     <MapIcon className="w-4 h-4 text-white" />
@@ -44,7 +74,9 @@ export function MobileLayout({ map, table, sidebar }: MobileLayoutProps) {
                   </div>
                 </div>
               </div>
-              {map}
+              <div className="flex-1">
+                {map}
+              </div>
             </div>
           </motion.div>
         </div>
@@ -55,9 +87,9 @@ export function MobileLayout({ map, table, sidebar }: MobileLayoutProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="h-full overflow-auto"
+            className="h-full p-4"
           >
-            <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 m-4 shadow-lg overflow-hidden">
+            <div className="bg-white/50 backdrop-blur-sm rounded-2xl border border-neutral-200/50 shadow-lg overflow-hidden h-full flex flex-col">
               <div className="p-4 border-b border-neutral-200/50">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
@@ -73,7 +105,7 @@ export function MobileLayout({ map, table, sidebar }: MobileLayoutProps) {
                   </div>
                 </div>
               </div>
-              <div className="p-4">{table}</div>
+              <div className="p-4 h-full overflow-auto">{table}</div>
             </div>
           </motion.div>
         </div>

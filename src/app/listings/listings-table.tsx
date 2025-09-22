@@ -32,6 +32,7 @@ import {
 import type { FilterOptions, Filters } from "@/types/filters";
 import type { Listing } from "@/types/listings";
 import { useDebounce } from "@/utils/client-utils";
+import { cn } from "@/utils/server-utils";
 import { trpc } from "@/utils/trpc";
 
 const COLUMN_LABELS: Record<string, string> = {
@@ -48,9 +49,10 @@ interface DataTableProps {
   columns: ColumnDef<Listing>[];
   filters: Filters;
   filterOptions: FilterOptions | null;
+  isMobile?: boolean;
 }
 
-export function DataTable({ columns, filters }: DataTableProps) {
+export function DataTable({ columns, filters, isMobile }: DataTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(50);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -149,9 +151,9 @@ export function DataTable({ columns, filters }: DataTableProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="w-full"
+      className={cn("w-full", isMobile ? "flex flex-col" : "")}
     >
-      <div className="flex items-center relative gap-2 py-2 max-w-sm">
+      <div className="flex items-center relative gap-2 py-2 max-w-sm flex-shrink-0">
         <Input
           placeholder="Search properties..."
           value={searchValue}
@@ -191,7 +193,7 @@ export function DataTable({ columns, filters }: DataTableProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="relative max-h-[calc(100vh-300px)] overflow-auto">
+      <div className={cn("relative overflow-auto", isMobile ? "h-full" : "max-h-[calc(100vh-300px)]")} style={isMobile ? { WebkitOverflowScrolling: 'touch' } : {}}>
         <Table>
           <TableHeader className="sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -254,7 +256,7 @@ export function DataTable({ columns, filters }: DataTableProps) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
+      <div className="flex items-center justify-between space-x-2 py-4 flex-shrink-0">
         <div className="text-muted-foreground flex-1 text-sm">
           {loading
             ? "Loading..."

@@ -1,6 +1,6 @@
 "use client";
 
-import ListingDetail from "@/components/ListingDetail";
+import ListingDetail from "@/components/listing-detail";
 import { trpc } from "@/utils/trpc";
 
 export default function DynamicListingClient({ id }: { id: string }) {
