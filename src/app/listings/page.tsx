@@ -2,9 +2,9 @@
 
 import dynamicImport from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import DashboardLayout from "../dashboard/layout";
 import { columns } from "../listings/listings-columns";
 import { DataTable } from "../listings/listings-table";
+import DashboardLayout from "@/components/dashboard-layout";
 import { FiltersSidebar } from "@/components/filters-sidebar";
 import { DashboardProvider } from "@/contexts/dashboard-context";
 import type { FilterOptions, Filters } from "@/types/filters";
@@ -115,8 +115,8 @@ export default function Dashboard() {
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Handlers
