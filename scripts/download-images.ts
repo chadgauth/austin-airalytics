@@ -62,7 +62,7 @@ async function main() {
 
   // Dynamic import after env is loaded
   const { getFeaturedListingIds } = await import(
-    "../src/components/featured-listings.js"
+    "../src/lib/featured-listings.js"
   );
   const { db } = await import("../src/db/index.js");
   const { listings: listingsTable } = await import("../src/db/schema.js");

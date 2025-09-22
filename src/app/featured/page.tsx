@@ -1,11 +1,11 @@
+import { FeaturedListings } from "@/components/featured-listings";
+import { PageHeader } from "@/components/page-header";
 import {
-  FeaturedListings,
   getCheapestListings,
   getMostReviewedListings,
   getSuperhostListings,
   getTopRatedListings,
-} from "@/components/featured-listings";
-import { PageHeader } from "@/components/page-header";
+} from "@/lib/featured-listings";
 
 export const dynamic = "force-static";
 

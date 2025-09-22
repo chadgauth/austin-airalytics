@@ -1,11 +1,7 @@
 import {
   and,
-  asc,
-  desc,
   eq,
-  gt,
   inArray,
-  isNotNull,
   like,
   or,
 } from "drizzle-orm";
@@ -327,115 +323,6 @@ export const listingsRouter = router({
     }),
 
   getMapData,
-
-  getMostReviewedListings: publicProcedure
-    .input(z.object({ limit: z.number().default(6) }))
-    .query(async ({ input }) => {
-      const rawListings = await db
-        .select({
-          id: listingsTable.id,
-          name: listingsTable.name,
-          picture_url: listingsTable.picture_url,
-          price: listingsTable.price,
-          neighbourhood_cleansed: listingsTable.neighbourhood_cleansed,
-          review_scores_rating: listingsTable.review_scores_rating,
-          number_of_reviews: listingsTable.number_of_reviews,
-          room_type: listingsTable.room_type,
-          host_name: hosts.name,
-          host_is_superhost: hosts.is_superhost,
-        })
-        .from(listingsTable)
-        .leftJoin(hosts, eq(listingsTable.host_id, hosts.id))
-        .orderBy(desc(listingsTable.number_of_reviews))
-        .limit(input.limit);
-
-      return rawListings.map((row) => ({
-        id: String(row.id),
-        name: row.name || "",
-        picture_url: row.picture_url || "",
-        price: row.price || "",
-        neighbourhood_cleansed: row.neighbourhood_cleansed || "",
-        review_scores_rating: String(row.review_scores_rating || ""),
-        number_of_reviews: String(row.number_of_reviews || ""),
-        room_type: row.room_type || "",
-        host_name: row.host_name || "",
-        host_is_superhost: String(row.host_is_superhost || false),
-      }));
-    }),
-
-  getSuperhostListings: publicProcedure
-    .input(z.object({ limit: z.number().default(6) }))
-    .query(async ({ input }) => {
-      const rawListings = await db
-        .select({
-          id: listingsTable.id,
-          name: listingsTable.name,
-          picture_url: listingsTable.picture_url,
-          price: listingsTable.price,
-          neighbourhood_cleansed: listingsTable.neighbourhood_cleansed,
-          review_scores_rating: listingsTable.review_scores_rating,
-          number_of_reviews: listingsTable.number_of_reviews,
-          room_type: listingsTable.room_type,
-          host_name: hosts.name,
-          host_is_superhost: hosts.is_superhost,
-        })
-        .from(listingsTable)
-        .leftJoin(hosts, eq(listingsTable.host_id, hosts.id))
-        .where(eq(hosts.is_superhost, true))
-        .orderBy(desc(listingsTable.review_scores_rating))
-        .limit(input.limit);
-
-      return rawListings.map((row) => ({
-        id: String(row.id),
-        name: row.name || "",
-        picture_url: row.picture_url || "",
-        price: row.price || "",
-        neighbourhood_cleansed: row.neighbourhood_cleansed || "",
-        review_scores_rating: String(row.review_scores_rating || ""),
-        number_of_reviews: String(row.number_of_reviews || ""),
-        room_type: row.room_type || "",
-        host_name: row.host_name || "",
-        host_is_superhost: String(row.host_is_superhost || false),
-      }));
-    }),
-
-  getCheapestListings: publicProcedure
-    .input(z.object({ limit: z.number().default(6) }))
-    .query(async ({ input }) => {
-      const rawListings = await db
-        .select({
-          id: listingsTable.id,
-          name: listingsTable.name,
-          picture_url: listingsTable.picture_url,
-          price: listingsTable.price,
-          neighbourhood_cleansed: listingsTable.neighbourhood_cleansed,
-          review_scores_rating: listingsTable.review_scores_rating,
-          number_of_reviews: listingsTable.number_of_reviews,
-          room_type: listingsTable.room_type,
-          host_name: hosts.name,
-          host_is_superhost: hosts.is_superhost,
-        })
-        .from(listingsTable)
-        .leftJoin(hosts, eq(listingsTable.host_id, hosts.id))
-        .where(
-          and(isNotNull(listingsTable.price), gt(listingsTable.price, "0")),
-        )
-        .orderBy(asc(listingsTable.price))
-        .limit(input.limit);
-
-      return rawListings.map((row) => ({
-        id: String(row.id),
-        name: row.name || "",
-        picture_url: row.picture_url || "",
-        price: row.price || "",
-        neighbourhood_cleansed: row.neighbourhood_cleansed || "",
-        review_scores_rating: String(row.review_scores_rating || ""),
-        number_of_reviews: String(row.number_of_reviews || ""),
-        room_type: row.room_type || "",
-        host_name: row.host_name || "",
-        host_is_superhost: String(row.host_is_superhost || false),
-      }));
-    }),
 
   getListing: publicProcedure
     .input(z.object({ id: z.string() }))
