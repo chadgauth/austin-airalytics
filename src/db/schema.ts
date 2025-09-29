@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   bigint,
   boolean,
@@ -132,3 +133,21 @@ export const hosts = pgTable("hosts", {
   has_profile_pic: boolean("has_profile_pic"),
   identity_verified: boolean("identity_verified"),
 });
+
+export const calendar = pgTable("calendar", {
+  id: integer("id").primaryKey(),
+  listing_id: bigint("listing_id", { mode: "number" }).references(() => listings.id),
+  date: date("date"),
+  available: boolean("available"),
+  price: text("price"),
+  adjusted_price: text("adjusted_price"),
+  minimum_nights: integer("minimum_nights"),
+  maximum_nights: integer("maximum_nights"),
+});
+
+export const calendarRelations = relations(calendar, ({ one }) => ({
+  listing: one(listings, {
+    fields: [calendar.listing_id],
+    references: [listings.id],
+  }),
+}));

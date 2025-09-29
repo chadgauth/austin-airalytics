@@ -21,6 +21,8 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+import lightgbm as lgb
+import shap
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -233,11 +235,30 @@ for amenity, count in amenity_counts.most_common(20):
 
 # Price impact of top amenities
 top_amenities = [amenity for amenity, _ in amenity_counts.most_common(10)]
+amenity_impact = []
 for amenity in top_amenities:
     with_amenity = listings_df[listings_df['amenities_list'].apply(lambda x: amenity in x)]['price'].mean()
     without_amenity = listings_df[listings_df['amenities_list'].apply(lambda x: amenity not in x)]['price'].mean()
-    price_diff = ((with_amenity - without_amenity) / without_amenity) * 100
-    print(f"{amenity}: +{price_diff:.1f}% price premium")
+    price_diff_pct = ((with_amenity - without_amenity) / without_amenity) * 100
+    count_with = listings_df['amenities_list'].apply(lambda x: amenity in x).sum()
+    count_without = len(listings_df) - count_with
+
+    # Calculate confidence interval using standard error
+    se = np.sqrt((with_amenity**2 / count_with) + (without_amenity**2 / count_without))
+    ci_lower = price_diff_pct - 1.96 * se / without_amenity * 100
+    ci_upper = price_diff_pct + 1.96 * se / without_amenity * 100
+
+    amenity_impact.append({
+        'amenity': amenity,
+        'uplift_pct': round(price_diff_pct, 2),
+        'ci_lower': round(ci_lower, 2),
+        'ci_upper': round(ci_upper, 2),
+        'count_with': int(count_with),
+        'count_without': int(count_without),
+        'avg_price_with': round(with_amenity, 2),
+        'avg_price_without': round(without_amenity, 2)
+    })
+    print(f"{amenity}: +{price_diff_pct:.1f}% price premium (95% CI: {ci_lower:.1f}% to {ci_upper:.1f}%)")
 
 
 # ## Revenue Forecasting
@@ -339,6 +360,95 @@ for _, row in listings_df.head(100)[['id', 'name', 'neighbourhood_cleansed', 'pr
         'room_type': row['room_type']
     })
 
+# Hedonic regression for amenity effects (log-linear model)
+import statsmodels.api as sm
+
+# Prepare data for hedonic regression
+hedonic_df = listings_df.copy()
+
+# Create dummy variables for amenities (top 10 to avoid multicollinearity)
+top_amenities = [amenity for amenity, _ in amenity_counts.most_common(10)]
+for amenity in top_amenities:
+    hedonic_df[f'amenity_{amenity.replace(" ", "_").replace("-", "_")}'] = hedonic_df['amenities_list'].apply(lambda x: 1 if amenity in x else 0)
+
+# Create neighborhood fixed effects (limit to top neighborhoods)
+top_neighborhoods = hedonic_df['neighbourhood_cleansed'].value_counts().head(10).index
+hedonic_df['neighbourhood_cleansed'] = hedonic_df['neighbourhood_cleansed'].apply(lambda x: x if x in top_neighborhoods else 'Other')
+neighborhood_dummies = pd.get_dummies(hedonic_df['neighbourhood_cleansed'], prefix='neigh', drop_first=True)
+
+# Prepare features
+hedonic_features = ['accommodates', 'bedrooms', 'bathrooms', 'beds'] + [f'amenity_{amenity.replace(" ", "_").replace("-", "_")}' for amenity in top_amenities] + list(neighborhood_dummies.columns)
+X_hedonic = pd.concat([hedonic_df[['accommodates', 'bedrooms', 'bathrooms', 'beds']], hedonic_df[[f'amenity_{amenity.replace(" ", "_").replace("-", "_")}' for amenity in top_amenities]], neighborhood_dummies], axis=1)
+X_hedonic = X_hedonic.fillna(0).astype(float)  # Fill NaN and ensure all columns are numeric
+X_hedonic = sm.add_constant(X_hedonic)
+y_hedonic = np.log(hedonic_df['price'])
+
+# Fit hedonic model
+hedonic_model = sm.OLS(y_hedonic, X_hedonic).fit()
+
+# Extract amenity coefficients and convert to percentage uplift
+amenity_coefficients = {}
+for amenity in top_amenities:
+    col_name = f'amenity_{amenity.replace(" ", "_").replace("-", "_")}'
+    if col_name in hedonic_model.params.index:
+        coef = hedonic_model.params[col_name]
+        uplift_pct = (np.exp(coef) - 1) * 100
+        p_value = hedonic_model.pvalues[col_name]
+        amenity_coefficients[amenity] = {
+            'coefficient': round(coef, 4),
+            'uplift_pct': round(uplift_pct, 2),
+            'p_value': round(p_value, 4),
+            'significant': bool(p_value < 0.05)
+        }
+
+print("\nHedonic Regression Results - Amenity Effects:")
+for amenity, stats in amenity_coefficients.items():
+    sig_marker = "*" if stats['significant'] else ""
+    print(f"{amenity}: {stats['uplift_pct']:.1f}% uplift (coef={stats['coefficient']}, p={stats['p_value']:.3f}){sig_marker}")
+
+# LightGBM model with SHAP for feature importance
+print("\nTraining LightGBM model for feature importance...")
+
+# Prepare features for LightGBM
+lgb_features = ['accommodates', 'bedrooms', 'bathrooms', 'beds', 'review_scores_rating', 'number_of_reviews'] + [f'amenity_{amenity.replace(" ", "_").replace("-", "_")}' for amenity in top_amenities[:10]]
+X_lgb = hedonic_df[lgb_features].fillna(0)
+y_lgb = hedonic_df['price']
+
+# Split data
+X_train_lgb, X_test_lgb, y_train_lgb, y_test_lgb = train_test_split(X_lgb, y_lgb, test_size=0.2, random_state=42)
+
+# Train LightGBM
+lgb_model = lgb.LGBMRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
+lgb_model.fit(X_train_lgb, y_train_lgb)
+
+# SHAP analysis
+explainer = shap.TreeExplainer(lgb_model)
+shap_values = explainer.shap_values(X_test_lgb)
+
+# Get feature importance
+feature_importance = pd.DataFrame({
+    'feature': X_lgb.columns,
+    'importance': lgb_model.feature_importances_,
+    'shap_mean_abs': np.abs(shap_values).mean(axis=0)
+}).sort_values('importance', ascending=False)
+
+print("Top 10 features by importance:")
+print(feature_importance.head(10))
+
+# SHAP summary for top amenities
+amenity_shap = {}
+for i, feature in enumerate(X_lgb.columns):
+    if feature.startswith('amenity_'):
+        amenity_name = feature.replace('amenity_', '').replace('_', ' ')
+        amenity_shap[amenity_name] = {
+            'shap_value': round(np.abs(shap_values[:, i]).mean(), 4),
+            'feature_importance': int(lgb_model.feature_importances_[i])
+        }
+
+print("\nSHAP values for amenities:")
+for amenity, values in sorted(amenity_shap.items(), key=lambda x: x[1]['shap_value'], reverse=True):
+    print(f"{amenity}: SHAP={values['shap_value']}, Importance={values['feature_importance']}")
+
 # Export complete analytics data to JSON
 results = {
     'summary': {
@@ -352,7 +462,11 @@ results = {
     'neighbourhood_analysis': neighbourhood_analysis,
     'room_type_analysis': room_type_analysis,
     'top_revenue_listings': top_revenue_listings,
-    'sample_listings': sample_listings
+    'sample_listings': sample_listings,
+    'amenity_impact': amenity_impact,
+    'hedonic_coefficients': {k: {kk: float(vv) if isinstance(vv, (int, float)) else vv for kk, vv in v.items()} for k, v in amenity_coefficients.items()},
+    'feature_importance': feature_importance.to_dict('records'),
+    'amenity_shap': {k: {kk: float(vv) for kk, vv in v.items()} for k, v in amenity_shap.items()}
 }
 
 import json

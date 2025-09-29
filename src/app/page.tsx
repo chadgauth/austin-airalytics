@@ -10,6 +10,7 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroSection } from "@/components/hero-section";
+import PricePredictor from "@/components/price-predictor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -50,6 +51,22 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <HeroSection />
+
+      {/* Price Predictor */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Predict Your Airbnb Nightly Rate
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Use our AI-powered predictor to estimate optimal pricing for your Austin property.
+              Get data-driven insights based on 7,000+ listings and advanced market analytics.
+            </p>
+          </div>
+          <PricePredictor />
+        </div>
+      </section>
 
       {/* Technical Highlights */}
       <section className="py-20">
